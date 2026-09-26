@@ -1,0 +1,1256 @@
+// Archived legacy sidebar; StudioLeftPanel.tsx is the live source of truth.
+// @ts-nocheck — live sidebar closure extracted verbatim from App.tsx.
+import React from 'react';
+import { AlertCircle, AlertTriangle, Archive, BadgeCheck, Blend, Box, Check, CheckCircle2, ChevronDown, Circle, CircleDot, ClipboardPaste, Component, Contrast, Eye, FileText, Folder, FolderUp, Grid, Hand, Hexagon, Image, Info, Layers, Layout, LayoutGrid, Loader2, Maximize2, PenTool, RefreshCw, Rocket, ScanSearch, Shapes, ShieldCheck, Sliders, Sparkles, Square, Trash2, Upload, Wand2, X, XCircle, Zap } from 'lucide-react';
+import { ASSET_TYPE_META, PLATFORM_ADAPTERS, STYLES_BY_ASSET_TYPE, ADOBE_CATEGORY_TAXONOMY } from '../../registry/presets';
+import { BATCH_TIERS, GENERATION_MODES, ICON_GENERATION_MODES, ICON_GRID_OPTIONS } from '../../registry/constants';
+import { ICON_STYLE_PRESETS } from '../../registry/icon-dna';
+import { deriveSidebarStage } from '../../engines/batch';
+import { RESOLUTION_POLICY } from '../../utils';
+
+export interface SidebarProps {
+    activeProjectId: any;
+    customStyles?: Array<{ id: string; name: string; directive: string; avoid: string }>;
+    onOpenCustomStyle?: () => void;
+    apiCallsToday?: number;
+    batchEngine: any;
+    batchQueue: any;
+    buildPreviewPrompt: any;
+    cancelGeneration: any;
+    cancelJsonImport: any;
+    checkPromptSafety: any;
+    composeIconPrompt: any;
+    estimateApiCalls: any;
+    genCtx: any;
+    generationProgress: any;
+    handleArchiveProject: any;
+    handleAssetTypeChange: any;
+    handleCreateProject: any;
+    handleDeleteProject: any;
+    handleDuplicateProject: any;
+    handleImportFileSelected: any;
+    handleImportImageSelected: any;
+    handleJsonBatchFileSelected: any;
+    handleMasterPromptBlur: any;
+    handleObjectModImportSelected: any;
+    handleReferenceImageSelected: any;
+    handleResetToPreset: any;
+    handleSwitchProject: any;
+    handleVisualSettingChange: any;
+    hasProviderKey?: boolean;
+    importFileInputRef: any;
+    importImageInputRef: any;
+    importedBatch: any;
+    isReferenceAnalyzing: any;
+    isRenderingAssets: any;
+    jsonBatchFileInputRef: any;
+    lastReferencePreview: any;
+    lockSettings: any;
+    masterPromptMode: any;
+    metadataGenerating: any;
+    metadataProgress: any;
+    objectModInputRef: any;
+    projects: any;
+    promptSafety: any;
+    referenceImageInputRef: any;
+    referenceInferredSettings: any;
+    resolveDNAFromOfficial: any;
+    setBlockingDialog: any;
+    setImportPasteModalOpen: any;
+    setJsonFormatModalOpen: any;
+    setJsonModalTab: any;
+    setLastReferencePreview: any;
+    setLockSettings: any;
+    setMasterPromptMode: any;
+    setPromptSafety: any;
+    setPromptPreview: any;
+    setSidebarProjectOpen: any;
+    setVectorState: any;
+    sidebarProjectOpen: any;
+    systemSettings: any;
+    vectorState: any;
+}
+
+export default function Sidebar({
+    activeProjectId, apiCallsToday = 0, batchEngine, batchQueue, buildPreviewPrompt,
+    cancelGeneration, cancelJsonImport, checkPromptSafety, composeIconPrompt, estimateApiCalls,
+    genCtx, generationProgress, handleArchiveProject, handleAssetTypeChange, handleCreateProject,
+    handleDeleteProject, handleDuplicateProject, handleImportFileSelected, handleImportImageSelected, handleJsonBatchFileSelected, handleMasterPromptBlur,
+    handleObjectModImportSelected, handleReferenceImageSelected, handleResetToPreset, handleSwitchProject, handleVisualSettingChange, hasProviderKey = true, importFileInputRef,
+    importImageInputRef, importedBatch, isReferenceAnalyzing, isRenderingAssets, jsonBatchFileInputRef,
+    lastReferencePreview, lockSettings, masterPromptMode, metadataGenerating, metadataProgress, objectModInputRef,
+    projects, promptSafety, referenceImageInputRef, referenceInferredSettings,
+    resolveDNAFromOfficial, setBlockingDialog, setImportPasteModalOpen,
+    setJsonFormatModalOpen, setJsonModalTab, setLastReferencePreview, setLockSettings, setMasterPromptMode,
+    setPromptSafety, setPromptPreview, setSidebarProjectOpen, setVectorState,
+    sidebarProjectOpen, systemSettings,
+    vectorState, customStyles = [], onOpenCustomStyle
+}: SidebarProps) {
+        const effectiveCategory = vectorState.internalCategory || vectorState.adobeCategory || '';
+        const availableSubcategories = ADOBE_CATEGORY_TAXONOMY[effectiveCategory] || [];
+        const availableStyles = STYLES_BY_ASSET_TYPE[vectorState.assetType] || STYLES_BY_ASSET_TYPE.vector;
+        const dirtyCount = Object.keys(vectorState._visualDirty || {}).length;
+        // [BUG FIX] sidebarMenuOpen dipindah ke state store level App() — tidak boleh
+        // useState di dalam render function (menyebabkan reset tiap render & pelanggaran Rules of Hooks).
+
+        // V2: Hitung stage saat ini untuk Footer & Status Penguncian
+        const currentStage = metadataGenerating ? 'metadata' : deriveSidebarStage({ importedBatch, isRenderingAssets, batchQueue });
+        const jsonControlled = importedBatch !== null;
+
+        return (
+            <aside className="w-[360px] xl:w-[400px] flex-shrink-0 flex flex-col h-full max-h-screen bg-[var(--bg-panel)] border-r border-[var(--border-structural)] select-none relative overflow-hidden">
+                <div className="border-b border-[var(--border-structural)]">
+                    <input ref={importFileInputRef} type="file" accept=".json" onChange={handleImportFileSelected} className="hidden" />
+                    <input ref={importImageInputRef} type="file" multiple accept=".png,.jpg,.jpeg,.webp,.zip" onChange={handleImportImageSelected} className="hidden" />
+                    <input ref={referenceImageInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleReferenceImageSelected} className="hidden" />
+                    <input ref={objectModInputRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={handleObjectModImportSelected} className="hidden" />
+                    <input ref={jsonBatchFileInputRef} type="file" multiple accept=".json,application/json" onChange={handleJsonBatchFileSelected} className="hidden" />
+                </div>
+
+                <div className="border-b border-[var(--border-structural)] px-4 py-2.5 flex items-center justify-between gap-4">
+                    <span className="text-[11px] font-semibold text-[var(--text-secondary)]">{apiCallsToday} API hari ini</span>
+                    <label className="flex items-center gap-2 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                        <input type="checkbox" checked={lockSettings} onChange={e => setLockSettings(e.target.checked)} className="w-3.5 h-3.5 accent-[var(--accent-cobalt)]" />
+                        Simpan setting
+                    </label>
+                </div>
+
+                {/* P2 progress mini — sticky di bawah project panel, terlihat tanpa scroll ke footer */}
+                {(isRenderingAssets || metadataGenerating) && (
+                    <div className="sticky top-0 z-10 px-3 py-2.5 border-b border-[var(--border-structural)] bg-[var(--bg-panel)] flex flex-col gap-1.5 shadow-sm">
+                        <div className="flex items-center justify-between text-[9px] font-bold">
+                            <span className="flex items-center gap-1.5 text-[var(--accent-cobalt)]">
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                                {metadataGenerating ? `Generating metadata ${metadataProgress.current}/${metadataProgress.total}` : `Generating ${generationProgress.current}/${generationProgress.total}`}
+                            </span>
+                            <span className="text-[var(--text-secondary)]">
+                                {(() => {
+                                    const cur = metadataGenerating ? metadataProgress.current : generationProgress.current;
+                                    const tot = metadataGenerating ? metadataProgress.total : generationProgress.total;
+                                    return tot > 0 ? `${Math.min(100, Math.round((cur / tot) * 100))}%` : '…';
+                                })()}
+                            </span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-[var(--bg-elevated)] overflow-hidden border border-[var(--border-structural)]">
+                            <div
+                                className="h-full bg-[var(--accent-cobalt)] transition-all duration-300"
+                                style={{
+                                    width: (() => {
+                                        const cur = metadataGenerating ? metadataProgress.current : generationProgress.current;
+                                        const tot = metadataGenerating ? metadataProgress.total : generationProgress.total;
+                                        return `${tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 30}%`;
+                                    })(),
+                                }}
+                            />
+                        </div>
+                        {batchQueue?.total > 1 && (
+                            <div className="text-[8px] text-[var(--text-secondary)] flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-cobalt)] animate-pulse" />
+                                Batch {batchQueue.currentIndex}/{batchQueue.total} · {batchQueue.completed} done
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* SCROLLABLE CONTENT AREA - Dengan ruang bawah untuk Floating Footer & Kunci Otomatis */}
+                <div className={`flex-1 min-h-0 overflow-y-auto custom-scrollbar p-5 space-y-5 pb-5 ${jsonControlled ? 'json-controls-readonly' : ''}`}>
+                    <div className="text-xs font-black tracking-widest uppercase text-[var(--accent-cobalt)] flex items-center justify-between border-b border-[var(--border-structural)] pb-3">
+                        <span>{jsonControlled && <span className="text-[var(--accent-cobalt)]">(JSON)</span>}</span>
+                        <Sliders className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                    </div>
+
+                    {/* SECTION 01: V2 MASTER PROMPT & JSON IMPORT */}
+                    <div>
+                        <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-2 flex justify-between items-center">
+                            <span>{importedBatch ? 'Imported Batch' : 'What to create'}</span>
+                            {importedBatch ? (
+                                <button onClick={() => setBlockingDialog({
+                                    title: isRenderingAssets ? ' Cancel Batch?' : ' Cancel JSON Import?',
+                                    message: isRenderingAssets
+                                        ? 'Batch akan dihentikan setelah prompt yang sedang berjalan selesai. Asset yang sudah selesai tetap tersimpan.'
+                                        : 'JSON batch ini akan dibatalkan dan sidebar kembali ke mode manual. Lanjutkan?',
+                                    confirmLabel: isRenderingAssets ? 'Ya, Stop Batch' : 'Ya, Batalkan',
+                                    cancelLabel: 'Tidak',
+                                    onCancel: () => setBlockingDialog(null),
+                                    onClose: () => { setBlockingDialog(null); cancelJsonImport(); }
+                                })} title={isRenderingAssets ? 'Cancel batch after current prompt' : 'Cancel JSON import and return to manual mode'} className="json-allow text-[var(--accent-error)] font-medium normal-case flex items-center gap-1">
+                                    <X className="w-3 h-3"/> {isRenderingAssets ? 'Cancel after current' : 'Cancel'}
+                                </button>
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    <span title={!vectorState.iconMode && systemSettings?.commercialRules?.enableDifferentiationCheck ? 'Termasuk +1 differentiation check (EU-10) bila aktif' : 'Estimasi call Gemini berdasarkan setting saat ini'} className="text-[9px] font-mono text-[var(--text-secondary)] normal-case">~{estimateApiCalls(vectorState, systemSettings)} API</span>
+                                    <button type="button" onClick={() => {
+                                        if (vectorState.iconMode) {
+                                            if (!vectorState.iconStyle) { genCtx.showToast?.('Pilih Icon Style dulu.', 'error'); return; }
+                                            const validSheetQtys = ICON_GRID_OPTIONS.map(g => g.qty);
+                                            const previewConfig = vectorState.iconGenerationMode === 'sheet'
+                                                ? { ...vectorState, iconQuantity: validSheetQtys.includes(vectorState.iconQuantity) ? vectorState.iconQuantity : 6 }
+                                                : vectorState;
+                                            setPromptPreview(composeIconPrompt(vectorState.singlePromptInput.trim() || 'prompt kosong', '', previewConfig));
+                                        } else {
+                                            setPromptPreview(buildPreviewPrompt(vectorState, systemSettings, genCtx));
+                                        }
+                                    }} className="text-[var(--accent-blue)] text-[9px] font-bold normal-case cursor-pointer flex items-center gap-1 hover:underline" title="Lihat prompt final yang dikirim ke model">
+                                        <Eye className="w-3 h-3"/> Lihat Prompt
+                                    </button>
+                                    <span className="text-[var(--accent-cobalt)] font-medium normal-case">Auto-Constraints</span>
+                                </span>
+                            )}
+                        </label>
+
+                        {!importedBatch ? (
+                            <>
+                                {/* ── 2-Tab Switcher — keeps both JSON import paths reachable ── */}
+                                <div className="flex gap-2 mb-3">
+                                    {([
+                                        { key: 'single', label: 'Single Prompt' },
+                                        { key: 'json',   label: ' Batch (JSON)'   },
+                                    ] as const).map(tab => (
+                                        <button
+                                            key={tab.key}
+                                            onClick={() => setMasterPromptMode(tab.key as any)}
+                                            className={`flex-1 py-2.5 rounded-xl text-[11px] font-black transition-all leading-none border flex items-center justify-center gap-1 ${
+                                                masterPromptMode === tab.key
+                                                    ? 'bg-[var(--bg-panel)] border-[var(--accent-cobalt)] text-[var(--accent-cobalt)]'
+                                                    : 'bg-[var(--bg-elevated)] border-[var(--border-structural)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                                            }`}
+                                        >
+                                            {tab.label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* ── Single Prompt ──────────────────────────────────────────── */}
+                                {masterPromptMode === 'single' && (
+                                    <>
+                                        {/* ── Reference preview strip — tampil jika ada gambar referensi ── */}
+                                        {lastReferencePreview && (
+                                            <div className="flex items-center gap-2 mb-2 p-2 rounded-xl bg-[var(--accent-cobalt)]/8 border border-[var(--accent-cobalt)]/25">
+                                                <img
+                                                    src={lastReferencePreview.url}
+                                                    alt="Referensi"
+                                                    className="w-10 h-10 rounded-lg object-cover border border-[var(--border-structural)] flex-shrink-0"
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-[11px] font-black text-[var(--accent-cobalt)] uppercase tracking-wider flex items-center gap-1">
+                                                        <BadgeCheck className="w-3 h-3" /> Referensi aktif
+                                                    </div>
+                                                    <div className="text-[11px] text-[var(--text-secondary)] truncate mt-0.5">
+                                                        {lastReferencePreview.name}
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => setLastReferencePreview(null)}
+                                                    className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-[var(--accent-error)]/20 text-[var(--text-secondary)] hover:text-[var(--accent-error)] transition-colors flex-shrink-0"
+                                                    title="Hapus referensi"
+                                                    aria-label="Hapus gambar referensi"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        )}
+                                        <textarea
+                                            value={vectorState.singlePromptInput}
+                                            onChange={e => {
+                                                const v = e.target.value;
+                                                setVectorState(prev => ({ ...prev, singlePromptInput: v }));
+                                                setPromptSafety(checkPromptSafety(v));
+                                            }}
+                                            onBlur={handleMasterPromptBlur}
+                                            className="w-full p-3 imagin-input text-xs font-mono min-h-[100px] leading-relaxed shadow-inner mb-3"
+                                            placeholder="Describe what you want to generate…"
+                                        />
+                                        {vectorState.singlePromptInput.trim() && !vectorState.iconMode && (
+                                            <div className={`flex items-center gap-2 px-1 mb-2 ${promptSafety.safe ? 'text-[var(--accent-success)]' : 'text-[var(--accent-error)]'}`}>
+                                                <div className={`w-2 h-2 rounded-full ${promptSafety.safe ? 'bg-[var(--accent-success)]' : 'bg-[var(--accent-error)]'}`} />
+                                                <span className="text-[11px] font-bold uppercase">{promptSafety.safe ? 'Prompt Safe' : 'Prompt Unsafe'}</span>
+                                                {promptSafety.warnings.map((w, i) => (
+                                                    <span key={i} className="text-[8px] text-[var(--accent-error)] font-medium">{w}</span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {/* Secondary import actions — ghost buttons (P1-2) */}
+                                        <div className="grid grid-cols-3 gap-2 mt-1">
+                                            <button
+                                                onClick={() => { if (isReferenceAnalyzing) return; referenceImageInputRef.current?.click(); }}
+                                                disabled={isReferenceAnalyzing || isRenderingAssets}
+                                                className="py-2.5 rounded-xl border border-[var(--border-structural)] bg-[var(--bg-elevated)] text-[11px] font-bold text-[var(--text-secondary)] hover:border-[var(--accent-cobalt)] hover:text-[var(--accent-cobalt)] hover:bg-[var(--accent-cobalt)]/5 flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                                title="Import gambar referensi → prompt otomatis"
+                                                aria-label="Import reference image"
+                                            >
+                                                {isReferenceAnalyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <ScanSearch className="w-3 h-3" />}
+                                                Reference
+                                            </button>
+                                            <button
+                                                onClick={() => importImageInputRef.current?.click()}
+                                                disabled={isRenderingAssets}
+                                                className="py-2.5 rounded-xl border border-[var(--border-structural)] bg-[var(--bg-elevated)] text-[11px] font-bold text-[var(--text-secondary)] hover:border-[var(--accent-cobalt)] hover:text-[var(--accent-cobalt)] hover:bg-[var(--accent-cobalt)]/5 flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                                title="PNG/JPG → metadata Adobe Stock"
+                                                aria-label="Generate metadata from image"
+                                            >
+                                                <Upload className="w-3 h-3" /> Metadata
+                                            </button>
+                                            <button
+                                                onClick={() => objectModInputRef.current?.click()}
+                                                disabled={isRenderingAssets}
+                                                className="py-2.5 rounded-xl border border-[var(--border-structural)] bg-[var(--bg-elevated)] text-[11px] font-bold text-[var(--text-secondary)] hover:border-[var(--accent-success)] hover:text-[var(--accent-success)] hover:bg-[var(--accent-success)]/5 flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                                title="Object Modifier — replikasi & ubah objek"
+                                                aria-label="Object Modifier"
+                                            >
+                                                <Wand2 className="w-3 h-3" /> Object Mod
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* ── Json Prompt — diperbesar & lebih menonjol ────────────────── */}
+                                {masterPromptMode === 'json' && (
+                                    <div className="border-2 border-[var(--accent-cobalt)]/25 rounded-xl bg-[var(--accent-cobalt)]/5 overflow-hidden shadow-sm">
+                                        <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+                                            <div className="text-[11px] font-black text-[var(--accent-cobalt)] uppercase tracking-wider flex items-center gap-1.5">JSON Batch</div>
+                                            <button
+                                                onClick={() => setJsonFormatModalOpen(true)}
+                                                className="text-[10px] font-bold text-[var(--accent-cobalt)] hover:underline flex items-center gap-1"
+                                            >
+                                                <FileText className="w-3 h-3" /> Format
+                                            </button>
+                                        </div>
+                                        <div className="px-3 pb-3 space-y-2.5">
+                                            {/* 2 kolom ringkas: Import File | Paste JSON (compact) */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <button
+                                                    onClick={() => { if (isRenderingAssets || jsonControlled) return; jsonBatchFileInputRef.current?.click(); }}
+                                                    disabled={isRenderingAssets || jsonControlled}
+                                                    title={isRenderingAssets ? 'Tunggu generasi selesai sebelum import batch baru' : (jsonControlled ? 'Batch sudah dimuat — selesaikan atau buang batch dulu' : 'Pilih 1 atau banyak file .json — drag & drop didukung')}
+                                                    className="py-2 rounded-lg border border-dashed border-[var(--accent-cobalt)]/40 bg-[var(--bg-panel)] text-[11px] font-bold text-[var(--accent-cobalt)] hover:bg-[var(--accent-cobalt-solid)] hover:text-white hover:border-[var(--accent-cobalt)] flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                                >
+                                                    <FolderUp className="w-3.5 h-3.5" /> Import File
+                                                </button>
+                                                <button
+                                                    onClick={() => { setJsonModalTab('paste'); setImportPasteModalOpen(true); }}
+                                                    disabled={isRenderingAssets || jsonControlled}
+                                                    title={isRenderingAssets ? 'Tunggu generasi selesai sebelum import batch baru' : (jsonControlled ? 'Batch sudah dimuat — selesaikan atau buang batch dulu' : 'Buka editor paste JSON')}
+                                                    className="py-2 rounded-lg border border-dashed border-[var(--border-structural)] bg-[var(--bg-elevated)]/50 text-[11px] font-bold text-[var(--text-secondary)] hover:border-[var(--accent-cobalt)] hover:text-[var(--accent-cobalt)] hover:bg-[var(--accent-cobalt)]/5 flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                                >
+                                                    <ClipboardPaste className="w-3.5 h-3.5" /> Paste JSON
+                                                </button>
+                                            </div>
+                                            <div className="text-[10px] text-[var(--text-secondary)] flex gap-1.5 items-start px-1">
+                                                <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent-success)] flex-shrink-0 mt-px" />
+                                                <span>Batch .json — single atau multi-file, max 200 prompts per file.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Import Asset moved to secondary ghost buttons in single mode (P1-2) — keep hidden for legacy masterPromptMode */}
+                            </>
+                        ) : (
+                            <div className="space-y-3">
+                                {/* FILE LIST — multi-file batch via picker (importedBatch.files ada & >1).
+                                    Single-file picker & paste-JSON flow lewat processImportedJSON yang TIDAK set files,
+                                    jadi masuk branch queue panel di bawah. */}
+                                {importedBatch.files && importedBatch.files.length > 1 && (
+                                    <div className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border-structural)] rounded-xl space-y-1.5">
+                                        <div className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-wider px-1">Files ({importedBatch.files.length})</div>
+                                        <div className="max-h-[120px] overflow-y-auto custom-scrollbar space-y-1">
+                                            {(() => {
+                                                const completed = batchQueue.completed;
+                                                // File hanya 'running' kalau batch memang sudah jalan.
+                                                // Saat 'ready' (baru import, belum klik generate),
+                                                // file pertama tidak boleh muncul spinner — semua queued.
+                                                const isGenerating = importedBatch.status === 'generating';
+                                                return importedBatch.files.map((f, fIdx) => {
+                                                    let fileStatus: 'queued' | 'done' | 'running' = 'queued';
+                                                    let inFileCompleted = 0;
+                                                    if (isGenerating && completed > f.endIndex) {
+                                                        fileStatus = 'done';
+                                                        inFileCompleted = f.promptCount;
+                                                    } else if (isGenerating && completed >= f.startIndex && completed <= f.endIndex) {
+                                                        fileStatus = 'running';
+                                                        inFileCompleted = completed - f.startIndex + 1;
+                                                    }
+                                                    return (
+                                                        <div key={fIdx}
+                                                            className={`flex items-center gap-2 text-[10px] p-1.5 rounded border transition-all
+                                                                ${fileStatus === 'running' ? 'bg-[var(--accent-cobalt)]/10 border-[var(--accent-cobalt)]/40 ring-1 ring-[var(--accent-cobalt)]' :
+                                                                  fileStatus === 'done' ? 'bg-[var(--accent-success)]/5 border-[var(--accent-success)]/20' :
+                                                                  'bg-[var(--bg-panel)] border-[var(--border-structural)]'}`}>
+                                                            {fileStatus === 'done' ? <CheckCircle2 className="w-3.5 h-3.5 text-[var(--accent-success)] flex-shrink-0" /> :
+                                                             fileStatus === 'running' ? <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--accent-cobalt)] flex-shrink-0" /> :
+                                                             null}
+                                                            <span className={`truncate flex-1 ${fileStatus === 'done' ? 'text-[var(--text-secondary)] line-through opacity-60' : fileStatus === 'running' ? 'text-[var(--accent-cobalt)] font-bold' : 'text-[var(--text-primary)]'}`}>
+                                                                {f.displayBatchName || f.batchName}
+                                                            </span>
+                                                            <span className="text-[9px] text-[var(--text-secondary)] flex-shrink-0 font-bold">
+                                                                {fileStatus === 'done' ? `${f.promptCount} ` : `${inFileCompleted}/${f.promptCount}`}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                });
+                                            })()}
+                                        </div>
+                                    </div>
+                                )}
+                                {/* QUEUE PANEL — hanya untuk paste JSON / legacy single-file (importedBatch.files undefined).
+                                    Multi-file batch lewat picker TIDAK menampilkan queue ini. */}
+                                {!importedBatch.files && (
+                                <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border-structural)] rounded-xl">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="text-[10px] font-bold text-[var(--text-secondary)] uppercase">Queue ({(importedBatch.totalPrompts ?? importedBatch.prompts?.length ?? 0)} Prompts)</div>
+                                        <div className="text-[10px] font-bold text-[var(--accent-success)]">{batchQueue.completed}/{(importedBatch.totalPrompts ?? importedBatch.prompts?.length ?? 0)} </div>
+                                    </div>
+                                    <div className="h-1.5 bg-[var(--bg-panel)] rounded-full overflow-hidden mb-2">
+                                        <div className="h-full bg-[var(--accent-success)] transition-all duration-500 rounded-full"
+                                            style={{ width: `${(importedBatch.totalPrompts ?? importedBatch.prompts?.length ?? 0) > 0 ? (batchQueue.completed / (importedBatch.totalPrompts ?? importedBatch.prompts?.length ?? 0)) * 100 : 0}%` }} />
+                                    </div>
+                                    <div className="max-h-[150px] overflow-y-auto custom-scrollbar space-y-1.5">
+                                        {importedBatch.prompts.map((p, idx) => {
+                                            const isDone = idx < batchQueue.completed;
+                                            const isCurrent = idx === batchQueue.currentIndex && currentStage === 'generating';
+                                            return (
+                                                <div key={p.id}
+                                                    className={`flex items-center gap-2 text-[10px] font-medium p-1.5 rounded border transition-all
+                                                        ${isCurrent ? 'bg-[var(--accent-cobalt)]/10 border-[var(--accent-cobalt)]/40 ring-1 ring-[var(--accent-cobalt)]' :
+                                                          isDone ? 'bg-[var(--accent-success)]/5 border-[var(--accent-success)]/20' :
+                                                          'bg-[var(--bg-panel)] border-[var(--border-structural)]'}`}>
+                                                    {isDone ? <CheckCircle2 className="w-3.5 h-3.5 text-[var(--accent-success)] flex-shrink-0" /> :
+                                                     isCurrent ? <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--accent-cobalt)] flex-shrink-0" /> :
+                                                     <CircleDot className="w-3.5 h-3.5 text-[var(--text-secondary)] flex-shrink-0" />}
+                                                    <span className={`truncate flex-1 ${isDone ? 'text-[var(--text-secondary)] line-through opacity-60' : isCurrent ? 'text-[var(--accent-cobalt)] font-bold' : ''}`}>
+                                                        {p.prompt}
+                                                    </span>
+                                                    <span className="text-[9px] text-[var(--text-secondary)] flex-shrink-0">#{idx + 1}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    {batchQueue.failed > 0 && (
+                                        <div className="mt-2 text-[9px] font-bold text-[var(--accent-error)] flex items-center gap-1">
+                                            <AlertTriangle className="w-3 h-3" /> {batchQueue.failed} prompt gagal
+                                        </div>
+                                    )}
+                                </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* JSON BATCH ACTIVE: tampilkan info settings dari JSON */}
+                    {importedBatch && (
+                        <div className="p-3 bg-[var(--accent-cobalt)]/10 border border-[var(--accent-cobalt)]/30 rounded-xl space-y-1.5 text-[10px]">
+                            <div className="font-black text-[var(--accent-cobalt)] uppercase tracking-wide flex items-center gap-1.5 mb-2">
+                                <ShieldCheck className="w-3.5 h-3.5" /> Settings dikontrol oleh JSON
+                            </div>
+                            {(() => {
+                                const prompts = importedBatch.prompts || [];
+                                if (!prompts.length) return null;
+                                const summary = (key) => [...new Set(prompts.map(p => p[key]).filter(Boolean))];
+                                const assetTypes = summary('assetType');
+                                const categories = summary('adobeCategory');
+                                const ratios = summary('aspectRatio');
+                                const formats = summary('outputFormat');
+                                const backgrounds = summary('background');
+                                const iconStyles = summary('iconStyle');
+                                const display = (items) => items.length === 1 ? items[0] : `${items.length} mixed`;
+                                return (
+                                    <div className="space-y-1 text-[var(--text-secondary)]">
+                                        <div><span className="font-bold text-[var(--text-primary)]">Asset Type:</span> {display(assetTypes)}</div>
+                                        <div><span className="font-bold text-[var(--text-primary)]">Category:</span> {display(categories)}</div>
+                                        <div><span className="font-bold text-[var(--text-primary)]">Aspect Ratio:</span> {display(ratios)}</div>
+                                        <div><span className="font-bold text-[var(--text-primary)]">Format:</span> {display(formats)} · {display(backgrounds)}</div>
+                                        {iconStyles.length > 0 && <div><span className="font-bold text-[var(--text-primary)]">Icon Style:</span> {display(iconStyles)}</div>}
+                                        <div className="text-[9px] mt-1 opacity-70">Settings bisa berbeda per prompt. Queue item aktif akan menyinkronkan sidebar saat generate.</div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    )}
+
+                    {/* SECTION 02 - 07 (Sama persis dengan kode Anda) */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block">Asset type</label>
+                            {vectorState._assetTypeDirty && (
+                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border-structural)]">
+                                    Manual
+                                </span>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-4 gap-2">
+                            {Object.entries(ASSET_TYPE_META).map(([typeId, meta]) => {
+                                const Icon = meta.icon;
+                                const accent = meta.accent;
+                                // Hanya tampil aktif jika user sudah secara sadar memilih (dirty flag)
+                                const isActive = vectorState.assetType === typeId && (Boolean(vectorState._assetTypeDirty) || referenceInferredSettings?.assetType === typeId);
+                                const isInferred = !vectorState._assetTypeDirty && referenceInferredSettings?.assetType === typeId;
+                                return (
+                                    <button
+                                        key={typeId}
+                                        type="button"
+                                        onClick={() => handleAssetTypeChange(typeId)}
+                                        title={`${meta.label} — ${meta.description}`}
+                                        className={`relative group flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl border transition-all duration-150 select-none ${
+                                            isActive
+                                                ? `border-[var(${accent})] bg-[var(${accent})]/10 text-[var(--text-primary)] shadow-xs ring-1 ring-[var(${accent})]/30`
+                                                : 'border-[var(--border-structural)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]/50 hover:bg-[var(--bg-panel)] hover:text-[var(--text-primary)]'
+                                        }`}
+                                    >
+                                        <div className={`p-1 rounded-md transition-transform duration-150 group-hover:scale-105 ${isActive ? `bg-[var(${accent})]/15` : ''}`}>
+                                            <Icon className={`w-4 h-4 transition-colors ${isActive ? '' : 'opacity-70 group-hover:opacity-100'}`}
+                                                style={isActive ? { color: `var(${accent})` } : undefined} />
+                                        </div>
+                                        <span className="text-[9px] font-bold leading-none tracking-tight">{meta.shortLabel}</span>
+                                        {isInferred && (
+                                            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[var(--accent-cobalt)] ring-2 ring-[var(--bg-panel)]" title="Terdeteksi dari referensi" />
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {vectorState.assetType !== 'photo' && (
+                    <div className="imagin-card p-4 space-y-4 bg-[var(--bg-elevated)] shadow-sm border-2 border-[var(--border-structural)]">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Grid className={`w-4 h-4 ${vectorState.iconMode ? 'text-[var(--accent-cobalt)]' : 'text-[var(--text-secondary)]'}`} />
+                                <div>
+                                    <div className="text-xs font-bold text-[var(--text-primary)]">Icon Mode</div>
+                                    <div className="text-[9px] text-[var(--text-secondary)]">Style lock · icon set generator</div>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked={vectorState.iconMode}
+                                onClick={() => setVectorState(prev => ({
+                                    ...prev,
+                                    iconMode: !prev.iconMode,
+                                    iconStyle: !prev.iconMode ? (prev.iconStyle || 'lineal_color') : null,
+                                    iconQuantity: !prev.iconMode && prev.iconGenerationMode === 'sheet'
+                                            ? (ICON_GRID_OPTIONS.map(g => g.qty).includes(prev.iconQuantity) ? prev.iconQuantity : 6)
+                                            : prev.iconQuantity,
+                                }))}
+                                className={`w-10 h-6 rounded-full relative transition-colors flex-shrink-0 ${vectorState.iconMode ? 'bg-[var(--accent-cobalt)]' : 'bg-[var(--bg-panel)] border border-[var(--border-structural)]'}`}
+                            >
+                                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-[var(--bg-panel)] shadow transition-all ${vectorState.iconMode ? 'left-[18px]' : 'left-0.5'}`} />
+                            </button>
+                        </div>
+
+                        {vectorState.iconMode && vectorState.assetType !== 'photo' && (
+                            <div className="space-y-4 pt-1">
+                                <div>
+                                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5">
+                                        Icon Style {vectorState.iconStyle === null && <span className="text-[var(--accent-error)] normal-case font-medium">— pilih salah satu</span>}
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {Object.entries(ICON_STYLE_PRESETS).map(([key, preset]) => {
+                                            const isActive = vectorState.iconStyle === key;
+                                            // mapping identik referensi (canvas L24672): glyph mencerminkan gramatika style, fill membedakan varian solid vs outline
+                                            const styleMeta = ({ black_outline: { Icon: Square, fill: false }, black_filled: { Icon: Square, fill: true }, gradient: { Icon: Blend, fill: false }, hand_drawn: { Icon: Hand, fill: false }, lineal_color: { Icon: PenTool, fill: false }, threed: { Icon: Box, fill: false }, flat: { Icon: Shapes, fill: false }, glyph: { Icon: Component, fill: true }, outline: { Icon: Circle, fill: false }, duotone: { Icon: Contrast, fill: false }, filled: { Icon: Hexagon, fill: true } } as any)[key];
+                                            const StyleIcon = styleMeta.Icon;
+                                            return (
+                                                <button
+                                                    key={key}
+                                                    onClick={() => setVectorState(prev => ({ ...prev, iconStyle: key }))}
+                                                    title={`${preset.label}: ${preset.hint}`}
+                                                    className={`p-3 rounded-xl border text-center text-xs font-bold transition-all flex flex-col items-center justify-center gap-1.5 ${
+                                                        isActive
+                                                            ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/15 text-[var(--text-primary)] shadow-sm'
+                                                            : 'border-[var(--border-structural)] bg-[var(--bg-panel)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]'
+                                                    }`}
+                                                >
+                                                    {StyleIcon && <StyleIcon fill={styleMeta.fill ? "currentColor" : "none"} className={`w-4 h-4 ${isActive ? 'text-[var(--accent-cobalt)]' : ''}`} />}
+                                                    <span className="leading-tight">{preset.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5">Generation Mode</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {ICON_GENERATION_MODES.map(m => {
+                                            const ModeIcon = m.id === 'sheet' ? Grid : LayoutGrid;
+                                            return (
+                                            <button
+                                                key={m.id}
+                                                onClick={() => setVectorState(prev => {
+                                                const validGridQtys = ICON_GRID_OPTIONS.map(g => g.qty);
+                                                const currentQtyValid = validGridQtys.includes(prev.iconQuantity);
+                                                return {
+                                                    ...prev,
+                                                    iconGenerationMode: m.id,
+                                                    // Saat switch ke sheet: snap ke grid option terdekat, default 6
+                                                    // Saat switch ke per_canvas: pertahankan qty atau reset ke 1
+                                                    iconQuantity: m.id === 'sheet'
+                                                        ? (currentQtyValid ? prev.iconQuantity : 6)
+                                                        : (prev.iconQuantity || 1),
+                                                };
+                                            })}
+                                                className={`p-2.5 rounded-xl border text-center text-xs font-bold transition-all flex flex-col items-center justify-center gap-1.5 ${
+                                                    vectorState.iconGenerationMode === m.id
+                                                        ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/15 text-[var(--text-primary)] shadow-sm'
+                                                        : 'border-[var(--border-structural)] bg-[var(--bg-panel)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]'
+                                                }`}
+                                            >
+                                                <ModeIcon className={`w-4 h-4 ${vectorState.iconGenerationMode === m.id ? 'text-[var(--accent-cobalt)]' : ''}`} />
+                                                <div className="leading-tight">{m.label}</div>
+                                            </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {vectorState.iconGenerationMode === 'per_canvas' && (
+                                    <div>
+                                        <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5">Icons to Generate</label>
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => setVectorState(prev => ({ ...prev, iconQuantity: Math.max(1, prev.iconQuantity - 1) }))}
+                                                className="w-9 h-9 rounded-lg border border-[var(--border-structural)] bg-[var(--bg-panel)] font-black text-sm hover:border-[var(--text-secondary)]"
+                                            >−</button>
+                                            <span className="flex-1 text-center text-sm font-black text-[var(--text-primary)]">{vectorState.iconQuantity}</span>
+                                            <button
+                                                onClick={() => setVectorState(prev => ({ ...prev, iconQuantity: Math.min(50, prev.iconQuantity + 1) }))}
+                                                className="w-9 h-9 rounded-lg border border-[var(--border-structural)] bg-[var(--bg-panel)] font-black text-sm hover:border-[var(--text-secondary)]"
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {vectorState.iconGenerationMode === 'sheet' && (
+                                    <div>
+                                        <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5">Grid Layout</label>
+                                        <div className="grid grid-cols-2 gap-1.5">
+                                            {ICON_GRID_OPTIONS.map(opt => {
+                                                const isSelected = vectorState.iconQuantity === opt.qty;
+                                                return (
+                                                    <button
+                                                        key={opt.qty}
+                                                        onClick={() => setVectorState(prev => ({ ...prev, iconQuantity: opt.qty }))}
+                                                        className={`p-2 rounded-xl border text-left transition-all ${
+                                                            isSelected
+                                                                ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/15 text-[var(--text-primary)]'
+                                                                : 'border-[var(--border-structural)] bg-[var(--bg-panel)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]'
+                                                        }`}
+                                                    >
+                                                        <div className="text-[11px] font-black leading-tight">{opt.label}</div>
+                                                        <div className="text-[9px] font-mono opacity-60 mt-0.5">{opt.grid} grid</div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {(() => {
+                                            const sel = ICON_GRID_OPTIONS.find(g => g.qty === vectorState.iconQuantity);
+                                            return sel ? (
+                                                <div className="text-[9px] text-[var(--text-secondary)] mt-1.5 flex items-center gap-1">
+                                                    <span className="opacity-60">→</span>
+                                                    <span>{sel.description}</span>
+                                                </div>
+                                            ) : null;
+                                        })()}
+                                    </div>
+                                )}
+
+                                {ICON_STYLE_PRESETS[vectorState.iconStyle] && (vectorState.iconGenerationMode === 'sheet' || vectorState.iconQuantity > 1) && (
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[var(--accent-success)]/10 border border-[var(--accent-success)]/30">
+                                        <ShieldCheck className="w-4 h-4 text-[var(--accent-success)] flex-shrink-0" />
+                                        <div className="text-[10px] text-[var(--accent-success)] font-bold leading-tight">
+                                            Style lock aktif
+                                            <div className="font-medium opacity-80">Semua icon mengikuti Style DNA "{ICON_STYLE_PRESETS[vectorState.iconStyle].label}" yang sama - tidak ada drift.</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    )}
+
+                    {/* ── 03 · TARGET PLATFORM, CATEGORY & SUBCATEGORY ── */}
+                    <div className="imagin-card bg-[var(--bg-elevated)] shadow-sm overflow-hidden">
+                        {/* Header */}
+                        <div className="p-4 pb-3">
+                            <div className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5 mb-3">
+                                <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent-cobalt)]" />
+                                Category
+                            </div>
+                            <div className="space-y-2">
+                                {/* Platform dropdown */}
+                                <div>
+                                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1">Target Platform</label>
+                                    <select
+                                        value={vectorState.platform}
+                                        onChange={e => {
+                                            const newPlatform = e.target.value;
+                                            if (PLATFORM_ADAPTERS[newPlatform]?.status !== 'active') return;
+                                            setVectorState(prev => ({
+                                                ...prev,
+                                                platform: newPlatform,
+                                                platformCategoryId: null,
+                                                internalCategory: '',
+                                                adobeCategory: '',
+                                                subcategory: '',
+                                                selectedSubject: null,
+                                                selectedScene: null,
+                                            }));
+                                        }}
+                                        className="w-full p-2 imagin-input text-[11px] font-bold"
+                                    >
+                                        {Object.entries(PLATFORM_ADAPTERS).map(([key, adapter]) => (
+                                            <option key={key} value={key} disabled={adapter.status !== 'active'}>
+                                                {adapter.label}{adapter.status !== 'active' ? ' (Coming Soon)' : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Category dropdown */}
+                                <div>
+                                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1">
+                                        Category
+                                        {vectorState.platformCategoryId && (
+                                            <span className="ml-1 font-normal opacity-60 normal-case">
+                                                → {vectorState.internalCategory}
+                                            </span>
+                                        )}
+                                    </label>
+                                    <select
+                                        value={vectorState.platformCategoryId ?? ''}
+                                        onChange={e => {
+                                            const newId = e.target.value ? Number(e.target.value) : null;
+                                            const derived = resolveDNAFromOfficial(vectorState.platform, newId, '');
+                                            const firstSub = ADOBE_CATEGORY_TAXONOMY[derived]?.[0] || '';
+                                            setVectorState(prev => ({
+                                                ...prev,
+                                                platformCategoryId: newId,
+                                                internalCategory: derived,
+                                                adobeCategory: derived,
+                                                subcategory: firstSub,
+                                                selectedSubject: null,
+                                                selectedScene: null,
+                                            }));
+                                        }}
+                                        className={`w-full p-2 imagin-input text-[11px] font-bold ${!vectorState.platformCategoryId ? 'text-[var(--text-secondary)]' : ''}`}
+                                    >
+                                        <option value="">— Choose Category —</option>
+                                        {(PLATFORM_ADAPTERS[vectorState.platform]?.categories || []).map(c => (
+                                            <option key={c.id} value={c.id}>{c.id}. {c.name}</option>
+                                        ))}
+                                    </select>
+                                    <div className="text-[11px] text-[var(--text-secondary)] mt-1">
+                                        Angka ini langsung dipakai di kolom "Category" CSV upload.
+                                    </div>
+                                    {!vectorState.platformCategoryId && (
+                                        <div className="mt-2 p-2 rounded-lg bg-[var(--accent-cobalt)]/8 border border-[var(--accent-cobalt)]/25 flex gap-2 text-[11px] leading-relaxed text-[var(--text-secondary)]">
+                                            <Info className="w-3 h-3 text-[var(--accent-cobalt)] flex-shrink-0 mt-0.5" />
+                                            <span><strong className="text-[var(--accent-cobalt)]">Required:</strong> Adobe Stock requires a category for all submissions. Pilih kategori yang paling sesuai dengan subjek utama.</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Subcategory — selalu tampil langsung di bawah Category */}
+                                <div>
+                                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1">Subcategory</label>
+                                    <select
+                                        value={vectorState.subcategory}
+                                        disabled={!vectorState.internalCategory}
+                                        onChange={e => {
+                                            const newSub = e.target.value;
+                                            const reResolved = resolveDNAFromOfficial(vectorState.platform, vectorState.platformCategoryId, newSub);
+                                            setVectorState(prev => ({
+                                                ...prev,
+                                                subcategory: newSub,
+                                                internalCategory: reResolved || prev.internalCategory,
+                                                adobeCategory: reResolved || prev.adobeCategory,
+                                                selectedSubject: null,
+                                                selectedScene: null,
+                                            }));
+                                        }}
+                                        className={`w-full p-2 imagin-input text-[11px] font-bold ${!vectorState.subcategory ? 'text-[var(--text-secondary)]' : ''}`}
+                                    >
+                                        <option value="">— Choose Subcategory —</option>
+                                        {availableSubcategories.map(sub => (
+                                            <option key={sub} value={sub}>{sub}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                        </div>
+                                    </div>
+                                    {lastReferencePreview && referenceInferredSettings && !isReferenceAnalyzing && (
+                                        <div className="px-3 py-2 border-t border-[var(--border-structural)]/60 bg-[var(--accent-cobalt)]/[0.04] text-[10px]">
+                                            <div className="font-bold text-[var(--accent-cobalt)] text-[9.5px] uppercase tracking-wider flex items-center gap-1 mb-1">
+                                                <Sparkles className="w-3 h-3 text-[var(--accent-cobalt)]" />
+                                                <span>Terapan Referensi</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[9.5px] text-[var(--text-secondary)] font-medium">
+                                                <div className="truncate"><span className="font-bold text-[var(--text-primary)]">Tipe:</span> {ASSET_TYPE_META[vectorState.assetType]?.shortLabel || vectorState.assetType}</div>
+                                                <div className="truncate"><span className="font-bold text-[var(--text-primary)]">Rasio:</span> {vectorState.visualSettings.aspectRatio || '—'}</div>
+                                                <div className="truncate col-span-2"><span className="font-bold text-[var(--text-primary)]">Kategori:</span> {vectorState.adobeCategory || '—'}{vectorState.subcategory ? ` / ${vectorState.subcategory}` : ''}</div>
+                                                <div className="truncate col-span-2"><span className="font-bold text-[var(--text-primary)]">Style:</span> {vectorState.visualSettings.style || '—'}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                    {!vectorState.iconMode && (
+                        <div>
+                            <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-2 block">How many</label>
+                            <div className="flex gap-2 mb-2">
+                                {GENERATION_MODES.map(m => {
+                                    // Hanya tampil aktif jika user sudah secara sadar memilih (dirty flag)
+                                    const isModeActive = Boolean(vectorState._generationModeDirty) && vectorState.generationMode === m.id;
+                                    return (
+                                    <button
+                                        key={m.id}
+                                        onClick={() => setVectorState(prev => ({ ...prev, generationMode: m.id, quantity: m.count, _generationModeDirty: true }))}
+                                        className={`flex-1 py-2 rounded-xl border text-[11px] font-bold text-center transition-all ${
+                                            isModeActive
+                                                ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/15 text-[var(--text-primary)] shadow-sm'
+                                                : 'border-[var(--border-structural)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]'
+                                        }`}
+                                        title={m.id === 'batch' ? 'Sequential (1 per sekali) · progress tersimpan · bisa pause & resume' : 'Paralel (2 per sekali) · cepat · tanpa resume'}
+                                    >
+                                        {m.label}
+                                    </button>
+                                    );
+                                })}
+                            </div>
+                            {vectorState.generationMode === 'batch' && (
+                                <div className="mt-2">
+                                    <div className="grid grid-cols-4 gap-1.5">
+                                        {BATCH_TIERS.map(t => {
+                                            const tierActive = vectorState.quantity === t;
+                                            return (
+                                                <button
+                                                    key={t}
+                                                    onClick={() => setVectorState(prev => ({ ...prev, quantity: t, _generationModeDirty: true }))}
+                                                    className={`py-2 rounded-lg border text-xs font-bold transition-all ${
+                                                        tierActive
+                                                            ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/15 text-[var(--accent-cobalt)]'
+                                                            : 'border-[var(--border-structural)] bg-[var(--bg-panel)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]'
+                                                    }`}
+                                                    title={t === 20 ? 'Batch maksimal · ±5-8 menit · progres tersimpan, bisa pause & resume' : `${t} asset berurutan · progres tersimpan`}
+                                                >
+                                                    ×{t}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                            <button
+                                onClick={() => setVectorState(prev => ({ ...prev, skipAIExpansion: !prev.skipAIExpansion }))}
+                                className={`w-full mt-2 p-3 rounded-xl border transition-all flex items-center justify-between gap-2 ${
+                                    vectorState.skipAIExpansion
+                                        ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/15'
+                                        : 'border-[var(--border-structural)] bg-[var(--bg-elevated)]'
+                                }`}
+                            >
+                                <span className="text-left">
+                                    <span className={`block text-xs font-bold ${vectorState.skipAIExpansion ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]'}`}>Quick Mode</span>
+                                    <span className="block text-[9px] text-[var(--text-secondary)]">No AI prompt expansion</span>
+                                </span>
+                                <span className={`w-9 h-5 rounded-full relative transition-colors flex-shrink-0 ${vectorState.skipAIExpansion ? 'bg-[var(--accent-cobalt)]' : 'bg-[var(--bg-panel)] border border-[var(--border-structural)]'}`}>
+                                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-[var(--bg-panel)] shadow transition-all ${vectorState.skipAIExpansion ? 'left-[18px]' : 'left-0.5'}`} />
+                                </span>
+                            </button>
+
+                            {/* Fase D — Collection Mode: hasilkan batch kohesif satu set.
+                                seriesId sama, palette konsisten, motif beda (planConceptClusters). */}
+                            <div className="mt-2 p-2.5 rounded-xl border space-y-2 bg-[var(--bg-elevated)]" style={vectorState.collectionMode ? { borderColor: 'var(--accent-success)', backgroundColor: 'color-mix(in srgb, var(--accent-success) 8%, var(--bg-panel))' } : { borderColor: 'var(--border-structural)' }}>
+                                <button
+                                    onClick={() => setVectorState(prev => ({ ...prev, collectionMode: !prev.collectionMode, collectionName: !prev.collectionMode ? (prev.collectionName || 'My Collection') : prev.collectionName }))}
+                                    className={`w-full p-2 rounded-lg text-xs font-bold transition-all flex items-center justify-between gap-2 ${
+                                        vectorState.collectionMode
+                                            ? 'text-[var(--accent-success)]'
+                                            : 'text-[var(--text-primary)]'
+                                    }`}
+                                    title="Collection = beberapa asset satu set kohesif (sering laku lebih baik di microstock)"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Layers className="w-3.5 h-3.5" />
+                                        Collection: {vectorState.collectionMode ? 'AKTIF' : 'Mati'}
+                                    </span>
+                                    <span className={`w-9 h-5 rounded-full relative transition-colors flex-shrink-0 ${vectorState.collectionMode ? 'bg-[var(--accent-success)]' : 'bg-[var(--bg-panel)] border border-[var(--border-structural)]'}`}>
+                                        <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-[var(--bg-panel)] shadow transition-all ${vectorState.collectionMode ? 'left-[18px]' : 'left-0.5'}`} />
+                                    </span>
+                                </button>
+                                {vectorState.collectionMode && (
+                                    <div className="relative">
+                                        <Folder className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-secondary)]" />
+                                        <input
+                                            type="text"
+                                            value={vectorState.collectionName}
+                                            onChange={e => setVectorState(prev => ({ ...prev, collectionName: e.target.value }))}
+                                            placeholder="My Collection"
+                                            className="w-full pl-8 p-2 imagin-input text-[11px] font-bold"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Output settings — collapsed per mockup (mockup tidak menampilkan kartu ini). */}
+                    {/* ponytail: info pipeline dipindah ke <details>; buka untuk lihat status Adobe pipeline. */}
+                    <details className="imagin-card bg-[var(--bg-elevated)] shadow-sm rounded-xl border border-[var(--border-structural)]">
+                        <summary className="px-4 py-2.5 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest cursor-pointer select-none flex items-center gap-1.5">
+                            <Rocket className="w-3.5 h-3.5 text-[var(--accent-success)]" /> Output settings
+                        </summary>
+                        <div className="px-4 pb-3 space-y-2">
+                            <div className="space-y-2 text-[10px] text-[var(--text-secondary)]">
+                                <div className="flex items-center gap-2 p-2.5 rounded-lg bg-[var(--bg-panel)] border border-[var(--border-structural)]">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-[var(--accent-success)] flex-shrink-0" />
+                                    <div>
+                                        <span className="font-bold text-[var(--text-primary)]">Auto Upscale</span>
+                                        <div className="text-[9px]">Auto-upscale raster to ≥ {RESOLUTION_POLICY.MINIMUM_MEGAPIXELS}MP; SVG artboard ≥ {RESOLUTION_POLICY.SVG_MINIMUM_MEGAPIXELS}MP</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 p-2.5 rounded-lg bg-[var(--bg-panel)] border border-[var(--border-structural)]">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-[var(--accent-success)] flex-shrink-0" />
+                                    <div>
+                                        <span className="font-bold text-[var(--text-primary)]">AI Metadata Pipeline</span>
+                                        <div className="text-[9px]">Analyze actual image & generate safe tags on pre-flight</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="text-[9px] text-[var(--text-secondary)] leading-relaxed pt-1 border-t border-[var(--border-structural)]">
+                                Pipeline: Generate → Auto Upscale → Save as Draft (Pending Metadata) → Generate Metadata (AI Vision Analysis) → Adobe Validation → Decision
+                            </div>
+                        </div>
+                    </details>
+
+                    <div className="imagin-card p-4 space-y-3 bg-[var(--bg-elevated)] shadow-sm">
+                        <div className="flex justify-between items-center text-xs font-bold mb-1">
+                            <span className="text-[var(--text-primary)]">Visual style</span>
+                            {dirtyCount > 0 && (
+                                <button
+                                    onClick={handleResetToPreset}
+                                    className="text-[9px] font-bold px-2 py-1 rounded border border-[var(--border-structural)] text-[var(--text-secondary)] hover:border-[var(--accent-error)] hover:text-[var(--accent-error)] transition-all flex items-center gap-1"
+                                >
+                                    <RefreshCw className="w-3 h-3" /> Reset ({dirtyCount})
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="space-y-3">
+                            {vectorState.iconMode ? (
+                                <div className="p-2.5 bg-[var(--bg-panel)] rounded-lg border border-[var(--border-structural)] text-[10px] text-[var(--text-secondary)] leading-relaxed">
+                                    Aspect Ratio (1:1) dan Style dikunci oleh Icon Style DNA yang dipilih di atas — tidak dikontrol dari sini.
+                                </div>
+                             ) : (
+                                 <>
+                                     {(() => {
+                                         const isRatioInferred = !vectorState._visualDirty?.aspectRatio && referenceInferredSettings?.aspectRatio === vectorState.visualSettings.aspectRatio;
+                                         const isStyleInferred = !vectorState._visualDirty?.style && referenceInferredSettings?.style === vectorState.visualSettings.style;
+                                         return (
+                                             <>
+                                                 <div>
+                                                     <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5">
+                                                         Aspect Ratio
+                                                         {vectorState._visualDirty?.aspectRatio ? (
+                                                             <span className="ml-1 text-[var(--accent-cobalt)] font-normal">(override)</span>
+                                                         ) : isRatioInferred ? (
+                                                             <span className="ml-1 text-[var(--accent-cobalt)] font-bold normal-case text-[9px]">(referensi)</span>
+                                                         ) : null}
+                                                     </label>
+                                                     <select
+                                                         value={vectorState.visualSettings.aspectRatio}
+                                                         onChange={e => handleVisualSettingChange('aspectRatio', e.target.value)}
+                                                         className={`w-full p-2 imagin-input text-[11px] font-bold transition-all ${
+                                                             isRatioInferred ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/10 text-[var(--text-primary)]' : ''
+                                                         }`}
+                                                     >
+                                                         <option value="4:3">4:3 Standard</option>
+                                                         <option value="1:1">1:1 Square</option>
+                                                         <option value="16:9">16:9 Widescreen</option>
+                                                         <option value="3:2">3:2 Classic</option>
+                                                         <option value="3:4">3:4 Portrait</option>
+                                                     </select>
+                                                 </div>
+
+                                                 <div>
+                                                     <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5">
+                                                         Style
+                                                         {vectorState._visualDirty?.style ? (
+                                                             <span className="ml-1 text-[var(--accent-cobalt)] font-normal">(override)</span>
+                                                         ) : isStyleInferred ? (
+                                                             <span className="ml-1 text-[var(--accent-cobalt)] font-bold normal-case text-[9px]">(referensi)</span>
+                                                         ) : null}
+                                                     </label>
+                                                     <select
+                                                         value={vectorState.visualSettings.style}
+                                                         onChange={e => handleVisualSettingChange('style', e.target.value)}
+                                                         className={`w-full p-2 imagin-input text-[11px] font-bold transition-all ${
+                                                             isStyleInferred ? 'border-[var(--accent-cobalt)] bg-[var(--accent-cobalt)]/10 text-[var(--text-primary)]' : ''
+                                                         }`}
+                                                     >
+                                                         {availableStyles.map(s => (
+                                                             <option key={s} value={s}>{s}</option>
+                                                         ))}
+                                                     </select>
+                                                 </div>
+                                                 <div className="mt-2">
+                                                     <div className="flex items-center justify-between">
+                                                         <label className="text-[10px] font-bold uppercase tracking-wide text-[var(--text-secondary)]">Custom Style</label>
+                                                         <button type="button" onClick={() => onOpenCustomStyle?.()} className="text-[10px] font-bold text-[var(--accent-cobalt)]">+ Custom…</button>
+                                                     </div>
+                                                     <select
+                                                         value={customStyles.find(s => s.directive && s.directive === vectorState.visualSettings.customDirective)?.id || ''}
+                                                         onChange={e => {
+                                                             const s = customStyles.find(x => x.id === e.target.value);
+                                                             setVectorState(prev => ({ ...prev, visualSettings: { ...prev.visualSettings, customDirective: s ? s.directive : '', customAvoid: s ? s.avoid : '' }, _visualDirty: { ...prev._visualDirty, style: true } }));
+                                                         }}
+                                                         className="w-full p-2 imagin-input text-[11px] font-bold mt-1"
+                                                     >
+                                                         <option value="">— pakai preset di atas —</option>
+                                                         {customStyles.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                                     </select>
+                                                 </div>
+                                             </>
+                                         );
+                                     })()}
+                                 </>
+                             )}
+
+                            {vectorState.iconMode ? (
+                                <div className="p-2.5 bg-[var(--bg-panel)] rounded-lg border border-[var(--border-structural)] text-[10px] text-[var(--text-secondary)] leading-relaxed pt-2 mt-2 border-t border-[var(--border-structural)]">
+                                    Output Format dikunci <b>PNG</b> pada Icon Mode (butuh alpha channel & ketajaman tepi). JPEG tidak tersedia untuk ikon.
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5 pt-2 border-t border-[var(--border-structural)]">Output Format</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['PNG', 'JPEG'].map(fmt => {
+                                            // Hanya tampil aktif jika user sudah secara sadar memilih (dirty flag)
+                                            const isFmtActive = vectorState.visualSettings.outputFormat === fmt && (Boolean(vectorState._visualDirty?.outputFormat) || referenceInferredSettings?.outputFormat === fmt);
+                                            return (
+                                            <button key={fmt} onClick={() => handleVisualSettingChange('outputFormat', fmt)} className={`p-2 text-[11px] font-bold rounded-lg border transition-all ${isFmtActive ? 'bg-[var(--accent-cobalt-solid)] text-white border-[var(--accent-cobalt)] shadow' : 'bg-[var(--bg-panel)] text-[var(--text-secondary)] border-[var(--border-structural)]'}`}>
+                                                {fmt} {fmt === 'JPEG' ? '(no alpha)' : 'File'}
+                                            </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {!vectorState._visualDirty?.outputFormat && !referenceInferredSettings?.outputFormat && (
+                                        <div className="mt-1 text-[9px] text-[var(--text-secondary)] leading-tight px-0.5">
+                                            Belum dipilih — sistem akan memakai <b>PNG</b> untuk vector (transparan) atau <b>JPEG</b> untuk illustration/3D secara otomatis.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase block mb-1.5 pt-2 border-t border-[var(--border-structural)]">Background Mode</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {(vectorState.assetType === 'photo'
+                                        ? [{ value: 'scene', label: 'Scene (Environmental)' }]
+                                        : [
+                                            { value: 'auto', label: 'Auto (Smart)' },
+                                            { value: 'white', label: 'White' },
+                                            { value: 'transparent', label: 'Transparent' },
+                                            { value: 'greenscreen', label: 'Green Screen' },
+                                        ]
+                                    ).map(bg => {
+                                        // Belum ada yang "terpilih" secara visual sampai user benar-benar
+                                        // klik salah satu tombol (_visualDirty.background) — sebelumnya
+                                        // 'white' selalu tampak ter-highlight walau itu cuma default
+                                        // tersembunyi, bukan pilihan sadar user (lihat FIX BUG-9).
+                                        // Untuk photo, 'scene' satu-satunya opsi → selalu aktif.
+                                        const isSelected = vectorState.assetType === 'photo'
+                                            ? true
+                                            : (Boolean(vectorState._visualDirty?.background) || referenceInferredSettings?.background === bg.value) &&
+                                              vectorState.visualSettings.background === bg.value;
+                                        return (
+                                        <button
+                                            key={bg.value}
+                                            onClick={() => handleVisualSettingChange('background', bg.value)}
+                                            title={bg.label}
+                                            aria-label={`Background: ${bg.label}`}
+                                            className={`p-2 flex items-center justify-center gap-1 rounded-lg border transition-all ${
+                                                isSelected
+                                                    ? bg.value === 'greenscreen'
+                                                        ? 'bg-[#00B140] text-white border-[#00B140] shadow'
+                                                        : 'bg-[var(--accent-cobalt-solid)] text-white border-[var(--accent-cobalt)] shadow'
+                                                    : 'bg-[var(--bg-panel)] text-[var(--text-secondary)] border-[var(--border-structural)]'
+                                            }`}
+                                        >
+                                            {bg.value === 'auto' ? (
+                                                <Sparkles className="w-3.5 h-3.5" />
+                                            ) : bg.value === 'transparent' ? (
+                                                <Grid className="w-3.5 h-3.5" />
+                                            ) : bg.value === 'scene' ? (
+                                                <Image className="w-3.5 h-3.5" />
+                                            ) : (
+                                                <Square
+                                                    className="w-3.5 h-3.5"
+                                                    style={{
+                                                        // White swatch: warna literal hasil generate, BUKAN token UI
+                                                        // (var(--text-primary) jadi coklat gelap di light theme).
+                                                        fill: bg.value === 'greenscreen' ? '#00B140' : (bg.value === 'white' ? '#FFFFFF' : 'var(--text-primary)'),
+                                                        stroke: 'currentColor',
+                                                    }}
+                                                />
+                                            )}
+                                            <span className="text-[9px] font-bold truncate">{bg.label.replace(' (Smart)', '').replace(' (Environmental)', '')}</span>
+                                        </button>
+                                        );
+                                    })}
+                                </div>
+                                {!vectorState._visualDirty?.background && !referenceInferredSettings?.background && vectorState.assetType !== 'photo' && (
+                                    <div className="mt-2 text-[9px] text-[var(--text-secondary)] leading-tight px-0.5">
+                                        Belum dipilih — sistem akan memakai <b>Auto (Smart)</b>: background disesuaikan otomatis per kategori/subkategori.
+                                    </div>
+                                )}
+                                {vectorState.assetType === 'photo' && (
+                                    <div className="mt-2 text-[9px] text-[var(--text-secondary)] leading-tight px-0.5">
+                                        Photo full-frame selalu memakai <b>Scene (Environmental)</b> — environment context, tanpa isolated background.
+                                    </div>
+                                )}
+                                {vectorState._visualDirty?.background && vectorState.visualSettings.background === 'greenscreen' && (
+                                    <div className="mt-2 flex items-start gap-2 p-2.5 rounded-lg bg-[#00B140]/10 border border-[#00B140]/40">
+                                        <span className="text-[10px] text-[#00B140] font-bold leading-tight">
+                                            Chroma key #00B140 — background hijau solid untuk VFX / video compositing. Cocok untuk aset karakter atau objek yang akan di-key di post-production.
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="pt-3 border-t border-[var(--border-structural)] flex items-center justify-between">
+                                <div>
+                                    <div className="text-[11px] font-bold text-[var(--accent-cobalt)] flex items-center gap-1.5">
+                                        <Sparkles className="w-3.5 h-3.5" /> High-DPI Ultra-Sharp
+                                    </div>
+                                    <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">Injects 4K edge quality params</div>
+                                </div>
+                                <button type="button" role="switch" aria-checked={vectorState.visualSettings.highDpiSharpness} onClick={() => handleVisualSettingChange('highDpiSharpness', !vectorState.visualSettings.highDpiSharpness)} className={`w-10 h-6 rounded-full relative transition-colors flex-shrink-0 cursor-pointer ${vectorState.visualSettings.highDpiSharpness ? 'bg-[var(--accent-cobalt)]' : 'bg-[var(--bg-panel)] border border-[var(--border-structural)]'}`}>
+                                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-[var(--bg-panel)] shadow transition-all ${vectorState.visualSettings.highDpiSharpness ? 'left-[18px]' : 'left-0.5'}`} />
+                                </button>
+                            </div>
+
+                            <div className="pt-3 border-t border-[var(--border-structural)] flex items-center justify-between">
+                                <div>
+                                    <div className="text-[11px] font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                                        <Eye className="w-3.5 h-3.5" /> Faceless Subject
+                                    </div>
+                                    <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">Abstract/minimalist features</div>
+                                </div>
+                                <button type="button" role="switch" aria-checked={vectorState.visualSettings.faceless} onClick={() => handleVisualSettingChange('faceless', !vectorState.visualSettings.faceless)} className={`w-10 h-6 rounded-full relative transition-colors flex-shrink-0 cursor-pointer ${vectorState.visualSettings.faceless ? 'bg-[var(--accent-cobalt)]' : 'bg-[var(--bg-panel)] border border-[var(--border-structural)]'}`}>
+                                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-[var(--bg-panel)] shadow transition-all ${vectorState.visualSettings.faceless ? 'left-[18px]' : 'left-0.5'}`} />
+                                </button>
+                            </div>
+
+                            {vectorState.assetType !== 'photo' && (
+                                <div className="pt-3 border-t border-[var(--border-structural)] flex items-center justify-between">
+                                    <div>
+                                        <div className="text-[11px] font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+                                            <Layout className="w-3.5 h-3.5" /> Negative Space
+                                        </div>
+                                        <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">Generous clean copy space</div>
+                                    </div>
+                                    <button type="button" role="switch" aria-checked={vectorState.visualSettings.negativeSpace} onClick={() => handleVisualSettingChange('negativeSpace', !vectorState.visualSettings.negativeSpace)} className={`w-10 h-6 rounded-full relative transition-colors flex-shrink-0 cursor-pointer ${vectorState.visualSettings.negativeSpace ? 'bg-[var(--accent-cobalt)]' : 'bg-[var(--bg-panel)] border border-[var(--border-structural)]'}`}>
+                                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-[var(--bg-panel)] shadow transition-all ${vectorState.visualSettings.negativeSpace ? 'left-[18px]' : 'left-0.5'}`} />
+                                </button>
+                                </div>
+                            )}
+                            <div className="pt-3 border-t border-[var(--border-structural)] flex items-center justify-between">
+                                <div>
+                                    <div className="text-[11px] font-bold text-[var(--accent-cobalt)] flex items-center gap-1.5">
+                                        <Sparkles className="w-3.5 h-3.5" /> Smart Composition (AI)
+                                    </div>
+                                    <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">
+                                        {vectorState.useAIComposition
+                                            ? '+1 API call · ide kontekstual dari tema'
+                                            : 'OFF · pakai ~960 kombinasi acak lokal'}
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={vectorState.useAIComposition}
+                                    onClick={() => setVectorState(prev => ({ ...prev, useAIComposition: !prev.useAIComposition }))}
+                                    className={`w-10 h-6 rounded-full relative transition-colors flex-shrink-0 cursor-pointer ${vectorState.useAIComposition ? 'bg-[var(--accent-cobalt)]' : 'bg-[var(--bg-panel)] border border-[var(--border-structural)]'}`}
+                                >
+                                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-[var(--bg-panel)] shadow transition-all ${vectorState.useAIComposition ? 'left-[18px]' : 'left-0.5'}`} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* Generate footer: one primary action and the existing save-settings toggle. */}
+                <div className="flex-shrink-0 bg-[var(--bg-panel)] border-t border-[var(--border-structural)] px-3 py-2">
+
+                    {currentStage === 'idle' && (
+                        <div className="space-y-2 footer-stage flex flex-col h-full min-h-0">
+                            <div className="min-h-0 space-y-2 pr-0.5">
+                            </div>
+
+                            <div className="flex-shrink-0 space-y-2 pt-1">
+                                <button onClick={() => batchEngine.run(genCtx)} disabled={isRenderingAssets || !hasProviderKey || !vectorState.singlePromptInput.trim() || !promptSafety.safe || !vectorState.adobeCategory} className="w-full py-2.5 rounded-lg imagin-btn-primary text-xs font-black tracking-widest flex justify-center items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-all" title={isRenderingAssets ? 'Generasi sedang berjalan…' : (!hasProviderKey ? `Set ${systemSettings?.aiConfig?.provider === '9router' ? '9Router' : 'Gemini'} API key di Settings untuk mulai generate` : (!vectorState.adobeCategory ? 'Select a Category first' : (!vectorState.singlePromptInput.trim() ? 'Enter a prompt' : (!promptSafety.safe ? 'Fix unsafe prompt' : ''))))}>
+                                    {isRenderingAssets ? <Loader2 className="w-4 h-4 animate-spin text-[var(--accent-cobalt)]" /> : <Zap className="w-4 h-4 text-[var(--accent-cobalt)]" />} {isRenderingAssets ? 'MENGHASILKAN…' : 'MULAI GENERASI'}
+                                </button>
+                                {/* [BUG FIX] Tampilkan hint inline (bukan hanya tooltip hover) saat tombol disabled */}
+                                {!isRenderingAssets && (!hasProviderKey || !vectorState.adobeCategory || !vectorState.singlePromptInput.trim() || !promptSafety.safe) && (
+                                    <div className="text-[9px] text-[var(--accent-error)] font-bold text-center flex items-center justify-center gap-1 opacity-80">
+                                        <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                                        {!hasProviderKey ? (
+                                            <span>Set {systemSettings?.aiConfig?.provider === '9router' ? '9Router' : 'Gemini'} API key di Settings untuk mulai generate</span>
+                                        ) : !vectorState.adobeCategory ? 'Pilih Category terlebih dahulu (bagian 03)' : !vectorState.singlePromptInput.trim() ? 'Ketik prompt deskripsi aset di atas' : 'Perbaiki prompt: terdeteksi konten tidak aman'}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {currentStage === 'idle_json' && (
+                        <button onClick={() => batchEngine.run(genCtx)} className="w-full py-3.5 rounded-xl imagin-btn-primary text-xs font-black tracking-widest flex justify-center items-center gap-2 shadow-lg hover:opacity-90 transition-all">
+                            <Zap className="w-4 h-4 text-[var(--accent-cobalt)]" /> GENERASI {importedBatch?.totalPrompts ?? importedBatch?.prompts?.length ?? 0} PROMPT
+                        </button>
+                    )}
+
+                    {(currentStage === 'generating' || currentStage === 'batch_paused') && (
+                        <div className="flex items-center gap-2">
+                            {currentStage === 'generating' ? (
+                                <>
+                                    {(importedBatch || vectorState.generationMode === 'batch') && (
+                                        <button onClick={() => { genCtx.pauseBatchRef.current = true; genCtx.setIsBatchPauseRequested?.(true); }} className="flex-1 py-2 rounded-lg border border-[var(--border-structural)] text-[11px] font-semibold">Jeda</button>
+                                    )}
+                                    <button onClick={() => cancelGeneration(genCtx)} className="flex-1 py-2 rounded-lg border border-[var(--accent-error)]/40 text-[var(--accent-error)] text-[11px] font-semibold">Hentikan</button>
+                                </>
+                            ) : (
+                                <>
+                                    <button onClick={() => {
+                                        // Resume yang benar: JSON batch → runJSON (lanjut dari index),
+                                        // batch normal → runNormal (auto-resume dari progress tersimpan).
+                                        if (genCtx.generationLockRef.current) return;
+                                        genCtx.generationLockRef.current = true;
+                                        genCtx.pauseBatchRef.current = false;
+                                        genCtx.cancelGenerationRef.current = false;
+                                        genCtx.setIsBatchPauseRequested?.(false);
+                                        const resumePromise = importedBatch
+                                            ? batchEngine.runJSON(genCtx.batchQueue?.completed || 0, genCtx)
+                                            : batchEngine.runNormal(genCtx);
+                                        Promise.resolve(resumePromise).finally(() => { genCtx.generationLockRef.current = false; });
+                                    }} className="flex-1 py-2 rounded-lg imagin-btn-primary text-[11px] font-semibold">Lanjutkan</button>
+                                    <button onClick={() => setBlockingDialog({
+                                        title: 'Reset Batch?',
+                                        message: 'Reset batch? Progress tidak bisa dikembalikan.',
+                                        confirmLabel: 'Ya, Reset',
+                                        cancelLabel: 'Batal',
+                                        onCancel: () => setBlockingDialog(null),
+                                        onClose: () => { setBlockingDialog(null); genCtx.resetSidebarToManual(); }
+                                    })} className="px-3 py-2 rounded-lg border border-[var(--accent-error)]/40 text-[var(--accent-error)] text-[11px] font-semibold">Reset</button>
+                                </>
+                            )}
+                        </div>
+                    )}
+
+
+                </div>
+
+            </aside>
+        );
+    }

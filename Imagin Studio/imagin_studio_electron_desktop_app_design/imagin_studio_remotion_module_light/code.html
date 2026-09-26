@@ -1,0 +1,608 @@
+<!DOCTYPE html><html class="h-full" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>IMAGIN STUDIO - Remotion Module</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#2563eb',
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          },
+          fontFamily: {
+            sans: ['Geist', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Phosphor Icons -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/thin/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css"><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/thin/style.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css" rel="stylesheet" type="text/css">
+<!-- Custom Styles for Studio UI Fine-Tuning -->
+<style data-purpose="custom-scrollbars">
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+<style data-purpose="custom-effects">
+    .glow-cyan {
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.45);
+    }
+    .glow-blue {
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+    .waveform-bar {
+      transition: height 0.2s ease;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 font-sans h-screen flex flex-col overflow-hidden select-none antialiased text-xs">
+<!-- BEGIN: MainHeader -->
+
+<!-- END: MainHeader -->
+<!-- Top Sub-Header / Composition Bar -->
+<div class="h-9 bg-slate-50 border-b border-slate-200 flex items-center justify-between px-4 shrink-0">
+<div class="flex items-center space-x-2.5">
+<span class="font-mono text-slate-800 text-xs font-semibold tracking-wide">Sequence_01.composition</span>
+<span class="bg-cyan-50 text-cyan-700 border border-cyan-300 text-[10px] font-mono px-2 py-0.5 rounded font-medium">Remotion v4.0</span>
+</div>
+<!-- Stage Controls -->
+<div class="flex items-center space-x-2 text-slate-500">
+<button class="p-1 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 rounded transition-colors" title="Zoom In"><i class="ph ph-magnifying-glass-plus text-sm"></i></button>
+<button class="p-1 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 rounded transition-colors" title="Zoom Out"><i class="ph ph-magnifying-glass-minus text-sm"></i></button>
+<button class="p-1 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 rounded transition-colors" title="Fit to Screen"><i class="ph ph-frame-corners text-sm"></i></button>
+<div class="h-3.5 w-px bg-slate-200 mx-1"></div>
+<button class="p-1 hover:text-slate-900 hover:bg-white border border-transparent hover:border-slate-200 rounded transition-colors" title="Stage Settings"><i class="ph ph-faders-horizontal text-sm"></i></button>
+</div>
+</div>
+<!-- BEGIN: MainStudioWorkspace -->
+<div class="flex-1 flex overflow-hidden">
+<!-- BEGIN: LeftSidebarWorkflow -->
+<aside class="w-72 bg-white border-r border-slate-200 flex flex-col justify-between overflow-y-auto shrink-0 p-3.5 space-y-4 shadow-xs">
+<div class="space-y-4">
+<!-- Sidebar Section Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2 text-slate-900 font-bold tracking-wider text-[11px] uppercase">
+<i class="ph ph-git-merge text-blue-600 text-sm"></i>
+<span class="">WORKFLOW</span>
+</div>
+<span class="text-[10px] font-mono text-cyan-700 bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded font-medium">Step 1-3</span>
+</div>
+<!-- Step 1: SOURCE -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-[11px]">
+<span class="flex items-center space-x-1.5 text-slate-800 font-semibold tracking-wide">
+<span class="w-4 h-4 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10px] flex items-center justify-center font-mono">1</span>
+<span class="">SOURCE</span>
+</span>
+<span class="text-[10px] text-slate-500 font-mono">4 Items</span>
+</div>
+<!-- Dropdown Pill -->
+<div class="bg-slate-50 border border-slate-200 rounded p-2 flex items-center justify-between text-slate-800 cursor-pointer hover:border-slate-400 transition-colors shadow-2xs">
+<div class="flex items-center space-x-2">
+<i class="ph ph-folder text-slate-500"></i>
+<span class="text-xs font-medium">Image / Video / Assets</span>
+</div>
+<i class="ph ph-caret-down text-slate-500 text-xs"></i>
+</div>
+<!-- Asset Grid Previews -->
+<div class="grid grid-cols-4 gap-1.5 pt-1">
+<!-- Asset 1: Cyberpunk city -->
+<div class="h-14 rounded overflow-hidden border border-slate-200 relative group cursor-pointer shadow-2xs">
+<img alt="Cyberpunk City" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoiWinKPNOvokwu7Nl4w5ELGEBXf6MruFMQnSm9wgd98BJ2imQkaD8OtzJxoy5SuUpWvF-DT7FsTPM2ZaW8U7RginaOSyuZxy5nonkrzmR0kLn_XV2bZpceaHOd8RAKVqoYt_1Wc1KUmYHyJrzuAzN2SPfzvid2lKKus8o65hxcrw1qTwxMAknxMuOiQLbderj93QVu0XQhCMHYzsqB53KTruRU28l2_JX9reymZmap4HfSpq4zylf">
+<div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+</div>
+<!-- Asset 2: Tiger -->
+<div class="h-14 rounded border border-slate-200 relative group cursor-pointer overflow-hidden shadow-2xs">
+<img alt="Tiger Portrait" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7M8x-IMW1PNuLBdofKAKdOjF45l_mTuLrMJj8JlVyY1lrrA5-kDUY4F_Lpi8RpwF6itegErHjrrMDO-LPYgEifp34G3uNiVDeuJiNX0_KUX8_doGR7jzj6ko4VZUrqa_0ccrd2ZFbLlU46hGkz7s4cmBPVLsUuNrnreL_QXAyTwKGPdEEiRD3fe7DIUNjs1ZH8hLxhtlNv0JTussVQEb5TZFhr0jnswKnFzW_CNVQjl-FnrXOnhkJ">
+<div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+</div>
+<!-- Asset 3: Mountain Lake -->
+<div class="h-14 rounded border-2 border-blue-600 ring-2 ring-blue-100 relative group cursor-pointer overflow-hidden shadow-2xs">
+<img alt="Mountain Lake" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVHOQv9gS4w35IPdzGDqdL8scvp93Zjyb0WDC_jhF-k06yzsHQCIfTPg9BC7y9edT8faqODOh3KTj63YOlzLAKmDdfagI2bF88TO3uhNGXTRnBxioKDJqzDWGODl1axcRAC_U_DI9TNsFjvQF_tOarmsriFMuv8_oO0MQ8CCpDWWICl4jo9cbuIT1soLUd0ntqdKrIxJUNwkErbPln5IJg5rq8UMLVKcHOTTAgy7ltQerhm4nye7Zh">
+<div class="absolute inset-0 bg-transparent"></div>
+</div>
+<!-- Asset 4: Add New Button -->
+<button class="h-14 rounded border border-dashed border-slate-300 hover:border-blue-500 flex flex-col items-center justify-center text-slate-500 hover:text-blue-600 transition-colors bg-slate-50 hover:bg-blue-50/50">
+<i class="ph ph-plus text-base"></i>
+<span class="text-[9px] mt-0.5 font-medium">Add</span>
+</button>
+</div>
+</div>
+<!-- Step 2: TEMPLATE -->
+<div class="space-y-2 pt-1">
+<div class="flex items-center space-x-1.5 text-[11px] text-slate-800 font-semibold tracking-wide">
+<span class="w-4 h-4 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10px] flex items-center justify-center font-mono">2</span>
+<span class="">TEMPLATE</span>
+</div>
+<!-- Template Selector Card -->
+<div class="bg-blue-50/60 border border-blue-300 rounded p-2.5 relative cursor-pointer hover:border-blue-500 transition-colors shadow-2xs">
+<div class="flex items-start justify-between">
+<div class="flex items-start space-x-2">
+<i class="ph-fill ph-video-camera text-blue-600 text-base mt-0.5"></i>
+<div>
+<h4 class="text-xs font-semibold text-slate-900">Cinematic Slideshow</h4>
+<p class="text-[10px] text-slate-500 leading-tight mt-0.5">Smooth push-in &amp; parallax motion</p>
+</div>
+</div>
+<i class="ph ph-caret-up-down text-slate-400 text-xs"></i>
+</div>
+</div>
+<!-- Template Quick Toggles -->
+<div class="flex items-center space-x-2 pt-0.5">
+<button class="flex-1 py-1 px-2 rounded bg-blue-50 border border-blue-200 text-blue-700 font-medium flex items-center justify-center space-x-1.5 text-[10px] shadow-2xs">
+<i class="ph ph-dots-nine"></i>
+<span class="">Motion Blur</span>
+</button>
+<button class="flex-1 py-1 px-2 rounded bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center space-x-1.5 text-[10px] transition-colors">
+<i class="ph ph-music-notes"></i>
+<span class="">Beat Sync</span>
+</button>
+</div>
+</div>
+<!-- Step 3: SETTINGS -->
+<div class="space-y-2.5 pt-1">
+<div class="flex items-center space-x-1.5 text-[11px] text-slate-800 font-semibold tracking-wide">
+<span class="w-4 h-4 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[10px] flex items-center justify-center font-mono">3</span>
+<span class="">SETTINGS</span>
+</div>
+<!-- Setting Rows -->
+<div class="space-y-1.5 text-[11px]">
+<!-- Duration -->
+<div class="flex items-center justify-between bg-slate-50 px-2.5 py-1.5 rounded border border-slate-200">
+<div class="flex items-center space-x-2 text-slate-600">
+<i class="ph ph-timer"></i>
+<span class="">Duration</span>
+</div>
+<div class="flex items-center space-x-1 font-mono text-slate-800 font-medium">
+<span class="">15s</span>
+<i class="ph ph-caret-down text-[10px] text-slate-400"></i>
+</div>
+</div>
+<!-- Resolution -->
+<div class="flex items-center justify-between bg-slate-50 px-2.5 py-1.5 rounded border border-slate-200">
+<div class="flex items-center space-x-2 text-slate-600">
+<i class="ph ph-aspect-ratio"></i>
+<span class="">Resolution</span>
+</div>
+<div class="flex items-center space-x-1 font-mono text-slate-800 font-medium">
+<span class="">1080p (Full HD)</span>
+<i class="ph ph-caret-down text-[10px] text-slate-400"></i>
+</div>
+</div>
+<!-- Frame Rate -->
+<div class="flex items-center justify-between bg-slate-50 px-2.5 py-1.5 rounded border border-slate-200">
+<div class="flex items-center space-x-2 text-slate-600">
+<i class="ph ph-film-slate"></i>
+<span class="">Frame Rate</span>
+</div>
+<span class="font-mono text-slate-800 font-medium">60 fps</span>
+</div>
+<!-- Pipeline -->
+<div class="flex items-center justify-between bg-slate-50 px-2.5 py-1.5 rounded border border-slate-200">
+<div class="flex items-center space-x-2 text-slate-600">
+<i class="ph ph-git-commit"></i>
+<span class="">Pipeline</span>
+</div>
+<span class="font-mono text-[10px] bg-cyan-50 px-1.5 py-0.5 rounded text-cyan-800 border border-cyan-200 font-medium">Rec.709 HDR</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Left Sidebar Bottom Action (Generate Button) -->
+<div class="pt-3">
+<button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded shadow-md flex items-center justify-center space-x-2 transition-all glow-blue">
+<i class="ph-bold ph-film-strip text-base"></i>
+<span class="text-xs">Generate</span>
+</button>
+<div class="flex items-center justify-between mt-2 px-1 text-[10px] text-slate-500 font-mono">
+<span class="">Cost: 20 Credits</span>
+<span class="flex items-center text-cyan-600 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-500 mr-1.5 animate-pulse"></span>
+            Ready for dispatch
+          </span>
+</div>
+</div>
+</aside>
+<!-- END: LeftSidebarWorkflow -->
+<!-- BEGIN: CenterWorkspaceArea -->
+<main class="flex-1 flex flex-col min-w-0 bg-[#f1f5f9] overflow-hidden">
+<!-- Video Player Viewport Container -->
+<div class="flex-1 flex flex-col justify-center items-center p-4 relative bg-[#f1f5f9] overflow-hidden">
+<!-- Video Player Wrapper (16:9 Aspect Ratio Container) -->
+<div class="w-full max-w-4xl max-h-full aspect-video bg-black rounded-lg border border-slate-300 shadow-xl relative overflow-hidden flex flex-col group">
+<!-- Viewport Overlay Header -->
+<div class="absolute top-2.5 left-3 right-3 flex items-center justify-between z-20 pointer-events-none">
+<span class="bg-white/90 backdrop-blur border border-slate-200 text-slate-800 text-[10px] font-mono px-2 py-0.5 rounded flex items-center shadow-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-500 mr-1.5 glow-cyan"></span>
+              PREVIEW CACHE: REALTIME
+            </span>
+<span class="bg-white/90 backdrop-blur text-slate-700 font-mono text-[10px] px-2 py-0.5 rounded border border-slate-200 shadow-xs">
+              1920 × 1080 • 60 FPS
+            </span>
+</div>
+<!-- Video Viewport Frame / Image Presentation -->
+<div class="relative w-full h-full flex items-center justify-center bg-zinc-950">
+<img alt="Mountain Lake Composition Preview" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvZiJpGuEbMdESDkWw_vR6poZbccbNklFIGDI6L1p20XC9nu6PZ4Sx8XpSF8WSCIxfkk8vr2zsEe5xHUjk5y_4daaiPkW-F_jTcYr_mVrpQ9TLigsCrL2COFHCF8WW3yZlHK9KWi0qks5kYFZLgPSLJsZjtJVvdTJBww0ydOQNjhrv-q2yvCJhatazp_ySDYLKH6ylHIqfc0zPW8S3kjztWvLFBdm6DlvjOyWjGI8eG9TXxU2TxqR1">
+<!-- Large Central Play Button Overlay -->
+<button class="absolute w-14 h-14 rounded-full bg-white/80 border border-slate-200 backdrop-blur-md flex items-center justify-center text-slate-900 text-xl hover:scale-110 hover:bg-blue-600 hover:text-white transition-all shadow-xl">
+<i class="ph-fill ph-play ml-1"></i>
+</button>
+</div>
+<!-- Viewport Media Controls Bar (Floating bottom) -->
+<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-3 flex flex-col space-y-1.5 z-20">
+<!-- Timeline scrubbing preview line -->
+<div class="w-full h-1 bg-white/30 rounded-full cursor-pointer relative overflow-hidden">
+<div class="w-1/4 h-full bg-blue-500"></div>
+</div>
+<!-- Transport Controls -->
+<div class="flex items-center justify-between pt-1 text-white">
+<div class="flex items-center space-x-3 text-sm">
+<button class="hover:text-cyan-300 transition-colors"><i class="ph-bold ph-arrow-counter-clockwise text-xs"></i></button>
+<button class="hover:text-cyan-300 transition-colors"><i class="ph-bold ph-skip-back"></i></button>
+<button class="hover:text-cyan-300 transition-colors text-base"><i class="ph-fill ph-play"></i></button>
+<button class="hover:text-cyan-300 transition-colors"><i class="ph-bold ph-skip-forward"></i></button>
+<span class="font-mono text-[11px] text-white/90 ml-2 tracking-wider">0:00 / 0:15</span>
+</div>
+<div class="flex items-center space-x-3 text-sm">
+<!-- Volume icon + mini slider -->
+<div class="flex items-center space-x-1.5">
+<i class="ph ph-speaker-high"></i>
+<div class="w-12 h-1 bg-white/30 rounded-full cursor-pointer overflow-hidden">
+<div class="w-3/4 h-full bg-cyan-400"></div>
+</div>
+</div>
+<button class="hover:text-cyan-300 transition-colors"><i class="ph ph-screencast"></i></button>
+<button class="hover:text-cyan-300 transition-colors"><i class="ph ph-corners-out"></i></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BEGIN: MultiTrackTimeline -->
+<!-- Timeline Workspace bottom portion -->
+<div class="h-56 bg-white border-t border-slate-200 flex flex-col shrink-0">
+<!-- Timeline Toolbar -->
+<div class="h-8 bg-slate-50 border-b border-slate-200 px-3 flex items-center justify-between text-slate-600 text-xs">
+<div class="flex items-center space-x-3">
+<div class="flex items-center space-x-1">
+<button class="p-1 hover:text-slate-900 rounded hover:bg-slate-200/70 transition-colors" title="Undo"><i class="ph ph-arrow-u-up-left"></i></button>
+<button class="p-1 hover:text-slate-900 rounded hover:bg-slate-200/70 transition-colors" title="Redo"><i class="ph ph-arrow-u-up-right"></i></button>
+<button class="p-1 hover:text-slate-900 rounded hover:bg-slate-200/70 transition-colors" title="Cut Clip"><i class="ph ph-scissors"></i></button>
+<button class="p-1 hover:text-slate-900 rounded hover:bg-slate-200/70 transition-colors" title="Snapping"><i class="ph ph-magnet"></i></button>
+</div>
+<div class="h-3.5 w-px bg-slate-300"></div>
+<span class="font-mono text-[11px] text-blue-700 font-medium tracking-wider">CURRENT: 00:00:00:00 (Frame 0)</span>
+</div>
+<!-- Timeline Zoom Slider & Snap Status -->
+<div class="flex items-center space-x-3">
+<div class="flex items-center space-x-1.5 text-slate-500">
+<i class="ph ph-minus text-[10px]"></i>
+<input class="w-20 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600" max="100" min="1" type="range" value="40">
+<i class="ph ph-plus text-[10px]"></i>
+</div>
+<span class="text-[10px] font-mono text-slate-700 bg-white px-1.5 py-0.5 rounded border border-slate-200 shadow-2xs font-medium">Snap</span>
+</div>
+</div>
+<!-- Timeline Tracks Container with Ruler -->
+<div class="flex-1 overflow-x-auto overflow-y-hidden relative flex flex-col bg-slate-100">
+<!-- Time Ruler Header -->
+<div class="h-6 bg-slate-50 border-b border-slate-200 flex items-center text-[10px] font-mono text-slate-500 pl-28 relative select-none">
+<span class="absolute left-28">00:00</span>
+<span class="absolute left-[26%]">00:03</span>
+<span class="absolute left-[44%]">00:06</span>
+<span class="absolute left-[62%]">00:09</span>
+<span class="absolute left-[80%]">00:12</span>
+<span class="absolute left-[95%]">00:15</span>
+<!-- Subtle ruler notches -->
+<div class="w-full h-full flex justify-between items-end pb-0.5 opacity-50 px-2">
+<div class="h-2 w-px bg-slate-400"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1.5 w-px bg-slate-400"></div>
+<div class="h-2 w-px bg-slate-400"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1.5 w-px bg-slate-400"></div>
+<div class="h-2 w-px bg-slate-400"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1.5 w-px bg-slate-400"></div>
+<div class="h-2 w-px bg-slate-400"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1 w-px bg-slate-300"></div><div class="h-1.5 w-px bg-slate-400"></div>
+</div>
+</div>
+<!-- Interactive Playhead Indicator Line (Frame 0 position) -->
+<div class="absolute top-0 bottom-0 left-28 w-px bg-rose-500 z-30 pointer-events-none flex flex-col items-center">
+<div class="w-2.5 h-2.5 bg-rose-500 rotate-45 -mt-1 shadow-md"></div>
+</div>
+<!-- Tracks Body -->
+<div class="flex-1 flex flex-col divide-y divide-slate-200 relative">
+<!-- Track 1: Video 1 -->
+<div class="h-16 flex items-center relative group bg-white/70">
+<!-- Track Header Label -->
+<div class="w-28 h-full bg-slate-50 border-r border-slate-200 flex items-center px-2 space-x-2 text-slate-700 shrink-0 z-10">
+<i class="ph ph-video-camera text-blue-600"></i>
+<span class="font-semibold text-[11px]">Video 1</span>
+</div>
+<!-- Track Timeline Clips Bar -->
+<div class="flex-1 h-full p-1 flex space-x-1.5 overflow-hidden">
+<!-- Clip 1 -->
+<div class="h-full w-1/4 bg-slate-900 rounded border border-blue-500 relative overflow-hidden flex items-center group/clip shadow-2xs">
+<img alt="Clip 1 Preview" class="absolute inset-0 w-full h-full object-cover opacity-75" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDilP5EGGGRRUKTUyLOhOloA8yMrxuf5TGYJo8zXXNog4KSEmRP_gTMIQrCLSdaOx-MlwAGfw4itUa8RIuxAYJ5I0qxfzteSMoFVEg6W0d4q4kLCUQDdO8ztcIwsO3ONQNgRCdYSMbVY8_DeTE2k7QAMlpEyUZmFLq2WdqxbVnJKX4hVUtbHM0pLDRtNUiYnIGMpI68MWsF-p2trYsoM1scr0U8SeDYhFzRYQfl8dq11oO1Oq8peHi5">
+<div class="absolute inset-0 bg-gradient-to-r from-blue-900/60 to-transparent"></div>
+<span class="relative z-10 font-mono text-[10px] text-white px-2 font-medium truncate drop-shadow-xs">Clip_01.mp4</span>
+</div>
+<!-- Clip 2 -->
+<div class="h-full w-1/4 bg-slate-900 rounded border border-slate-400 relative overflow-hidden flex items-center group/clip shadow-2xs">
+<img alt="Clip 2 Preview" class="absolute inset-0 w-full h-full object-cover opacity-75" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKE16cfrZsn2uZRx4RpJiQhCBT0bkJxnrn91fVBYg0_DgxJaAfO4Mp61vkmvTNBCQ3sdTtn0radwIHMXy-3yH8_2u1mBZaZDT_ZJEiHtauvrTKo7YUmX4PnNMig23rW2BLEiCCsNbhLhZISr8SPEvjhQFYEWg6Vuo--EwtnZK8isG9VzEgQowDAnxB__tqB0iV9MfWCyH4mcp-u1JaEBnKJWxvECC6ZrueR5MzpFcqaDJGeS8L3s5-">
+<div class="absolute inset-0 bg-gradient-to-r from-slate-900/60 to-transparent"></div>
+<span class="relative z-10 font-mono text-[10px] text-white px-2 font-medium truncate drop-shadow-xs">Clip_02.mp4</span>
+</div>
+<!-- Clip 3 -->
+<div class="h-full w-1/4 bg-slate-900 rounded border border-slate-400 relative overflow-hidden flex items-center group/clip shadow-2xs">
+<img alt="Clip 3 Preview" class="absolute inset-0 w-full h-full object-cover opacity-75" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf4oQ_-tAKqIimG0xAd63FboLh6RMkZhMe-Cn7iEJBXRfRlQjyWEF7JUlCgTATNxbxwUfNk3EB-QQ2STd48l7KS10vmaIHpbnRuQ9Nf2fscsKQ3XmXIuxPnnrSKWA0AnyJHsMopjt4us7y4jL14JmXeZr7k9k9TvipH14zyjSJ01Kpy7tikOC6mmI7rI66oyajUvbJOFReyT8op1Q2amdkA7Z9ywJI0t5IJBG44cg5PzFolrTq8mUx">
+<div class="absolute inset-0 bg-gradient-to-r from-slate-900/60 to-transparent"></div>
+<span class="relative z-10 font-mono text-[10px] text-white px-2 font-medium truncate drop-shadow-xs">Clip_03.mp4</span>
+</div>
+<!-- Clip 4 -->
+<div class="h-full w-1/4 bg-slate-900 rounded border border-slate-400 relative overflow-hidden flex items-center group/clip shadow-2xs">
+<img alt="Clip 4 Preview" class="absolute inset-0 w-full h-full object-cover opacity-75" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmF_pgJ3V3m9naQRJgu3qIUU_zcMQ3TAHrd3LxU9mO5F659cOhSEZ_C8ItRknE_3rFHqghNA92hpNKb1d5FBLh9Ntz5B12o1nx6KC0-fYuV_j3ATRtSUV0mqPYXfNqOkNnRAtod22xuctD7mGAwikuLEvtvO7qrEKuWHJ4bxpf5wPsSyo6dTt7w3OZw_kJ_kZfR0lXG4TY_7k70vOY2YuA8hYZpI_q46-Kr1BdmZeowxlEfgkxdq5s">
+<div class="absolute inset-0 bg-gradient-to-r from-slate-900/60 to-transparent"></div>
+<span class="relative z-10 font-mono text-[10px] text-white px-2 font-medium truncate drop-shadow-xs">Clip_04.mp4</span>
+</div>
+</div>
+</div>
+<!-- Track 2: Audio A1 -->
+<div class="h-14 flex items-center relative bg-white">
+<!-- Audio Header Label -->
+<div class="w-28 h-full bg-slate-50 border-r border-slate-200 flex items-center px-2 space-x-2 text-slate-700 shrink-0 z-10">
+<i class="ph ph-waveform text-cyan-600"></i>
+<span class="font-semibold text-[11px]">Audio A1</span>
+</div>
+<!-- Audio Clip Waveform Rendering -->
+<div class="flex-1 h-full p-1 flex items-center">
+<div class="w-full h-full bg-cyan-50/70 rounded border border-cyan-300 flex items-center px-3 relative overflow-hidden shadow-2xs">
+<!-- Continuous Waveform Visualization Bars -->
+<div class="flex items-center justify-between w-full h-7 space-x-0.5 text-cyan-600">
+<!-- Repeating simulated waveform bars -->
+<span class="h-2 w-0.5 bg-cyan-500"></span><span class="h-4 w-0.5 bg-cyan-500"></span>
+<span class="h-6 w-0.5 bg-cyan-500"></span><span class="h-3 w-0.5 bg-cyan-500"></span>
+<span class="h-5 w-0.5 bg-cyan-500"></span><span class="h-7 w-0.5 bg-cyan-500"></span>
+<span class="h-4 w-0.5 bg-cyan-500"></span><span class="h-2 w-0.5 bg-cyan-500"></span>
+<span class="h-5 w-0.5 bg-cyan-500"></span><span class="h-6 w-0.5 bg-cyan-500"></span>
+<span class="h-3 w-0.5 bg-cyan-500"></span><span class="h-5 w-0.5 bg-cyan-500"></span>
+<span class="h-7 w-0.5 bg-cyan-500"></span><span class="h-4 w-0.5 bg-cyan-500"></span>
+<span class="h-2 w-0.5 bg-cyan-500"></span><span class="h-6 w-0.5 bg-cyan-500"></span>
+<span class="h-4 w-0.5 bg-cyan-500"></span><span class="h-3 w-0.5 bg-cyan-500"></span>
+<span class="h-6 w-0.5 bg-cyan-500"></span><span class="h-7 w-0.5 bg-cyan-500"></span>
+<span class="h-5 w-0.5 bg-cyan-500"></span><span class="h-2 w-0.5 bg-cyan-500"></span>
+<span class="h-4 w-0.5 bg-cyan-500"></span><span class="h-6 w-0.5 bg-cyan-500"></span>
+<span class="h-5 w-0.5 bg-cyan-500"></span><span class="h-3 w-0.5 bg-cyan-500"></span>
+<span class="h-6 w-0.5 bg-cyan-500"></span><span class="h-7 w-0.5 bg-cyan-500"></span>
+<span class="h-4 w-0.5 bg-cyan-500"></span><span class="h-2 w-0.5 bg-cyan-500"></span>
+<span class="h-5 w-0.5 bg-cyan-500"></span><span class="h-6 w-0.5 bg-cyan-500"></span>
+<span class="h-3 w-0.5 bg-cyan-500"></span><span class="h-5 w-0.5 bg-cyan-500"></span>
+<span class="h-7 w-0.5 bg-cyan-500"></span><span class="h-4 w-0.5 bg-cyan-500"></span>
+<span class="h-2 w-0.5 bg-cyan-500"></span><span class="h-5 w-0.5 bg-cyan-500"></span>
+<span class="h-6 w-0.5 bg-cyan-500"></span><span class="h-3 w-0.5 bg-cyan-500"></span>
+<span class="h-7 w-0.5 bg-cyan-500"></span><span class="h-5 w-0.5 bg-cyan-500"></span>
+<span class="h-3 w-0.5 bg-cyan-500"></span><span class="h-6 w-0.5 bg-cyan-500"></span>
+<span class="h-7 w-0.5 bg-cyan-500"></span><span class="h-4 w-0.5 bg-cyan-500"></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: MultiTrackTimeline -->
+</main>
+<!-- END: CenterWorkspaceArea -->
+<!-- BEGIN: RightSidebarInspector -->
+<aside class="w-80 bg-white border-l border-slate-200 flex flex-col justify-between overflow-y-auto shrink-0 p-3.5 space-y-4 shadow-xs">
+<div class="space-y-4">
+<!-- Inspector Segmented Switcher -->
+<div class="flex items-center bg-slate-100 p-0.5 rounded border border-slate-200">
+<button class="flex-1 py-1 rounded bg-white text-slate-900 font-medium text-[11px] shadow-xs">Video</button>
+<button class="flex-1 py-1 rounded text-slate-500 hover:text-slate-900 font-medium text-[11px] transition-colors">Metadata</button>
+</div>
+<!-- Template Overview Header -->
+<div class="space-y-1.5">
+<div class="flex items-center space-x-2">
+<i class="ph-bold ph-film-slate text-blue-600 text-sm"></i>
+<h3 class="font-bold text-slate-900 text-xs tracking-wide">Cinematic Slideshow</h3>
+</div>
+<p class="text-[11px] text-slate-600 leading-relaxed">
+            Generative Remotion template utilizing WebGL camera zoom transitions, multi-layer depth parallax, and ambient bloom lighting.
+          </p>
+</div>
+<div class="h-px bg-slate-200"></div>
+<!-- Composition Key/Value Properties Table -->
+<div class="space-y-2 text-[11px]">
+<div class="flex items-center justify-between text-slate-500 font-mono text-[10px] pb-1 border-b border-slate-200">
+<span class="">PROPERTY</span>
+<span class="">VALUE</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Duration</span>
+<span class="text-slate-800 font-mono font-medium">15 seconds</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Resolution</span>
+<span class="text-blue-700 font-mono font-semibold">1080p (1920 × 1080)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Format</span>
+<span class="text-slate-800 font-mono">MP4 (H.264 / AAC)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">File Size (Est.)</span>
+<span class="text-slate-800 font-mono">12.4 MB</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Bitrate</span>
+<span class="text-slate-800 font-mono">8.2 Mbps VBR</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500">Created</span>
+<span class="text-slate-700 font-mono text-[10px]">2025-09-07 16:45</span>
+</div>
+</div>
+<div class="h-px bg-slate-200"></div>
+<!-- Neural Interpolation Module Card -->
+<div class="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2.5 shadow-2xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-1.5">
+<i class="ph-bold ph-cpu text-blue-600"></i>
+<span class="font-medium text-slate-800 text-xs">Neural Interpolation</span>
+</div>
+<!-- Cyan Active Toggle Dot -->
+<span class="w-2.5 h-2.5 rounded-full bg-cyan-500 glow-cyan"></span>
+</div>
+<!-- Accuracy Progress Bar -->
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full" style="width: 98.4%"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono">
+<span class="text-slate-500">Motion vectors: Stable</span>
+<span class="text-blue-700 font-semibold">98.4%</span>
+</div>
+</div>
+</div>
+<!-- Right Sidebar Bottom Action Buttons -->
+<div class="space-y-2 pt-2">
+<button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded shadow-sm flex items-center justify-center space-x-2 transition-colors">
+<i class="ph-bold ph-download-simple text-sm"></i>
+<span class="">Download</span>
+</button>
+<button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded border border-slate-300 flex items-center justify-center space-x-2 transition-colors">
+<i class="ph ph-folder text-sm"></i>
+<span class="">Open Folder</span>
+</button>
+</div>
+</aside>
+<!-- END: RightSidebarInspector -->
+</div>
+<!-- END: MainStudioWorkspace -->
+<!-- BEGIN: BottomPersistentDockTaskCenter -->
+<footer class="h-28 bg-white border-t border-slate-200 flex flex-col shrink-0 text-xs shadow-md">
+<!-- Task Center Sub-Navigation & System Hardware Status -->
+<div class="h-8 bg-slate-50 border-b border-slate-200 px-3 flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<div class="flex items-center space-x-1.5 text-slate-900 font-semibold uppercase text-[11px] tracking-wide">
+<i class="ph-bold ph-tray text-blue-600"></i>
+<span class="">TASK CENTER</span>
+</div>
+<div class="h-3 w-px bg-slate-200 mx-1"></div>
+<!-- Filter Pills -->
+<div class="flex items-center space-x-1 text-[11px]">
+<span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-mono border border-blue-200 font-semibold">All (12)</span>
+<button class="text-slate-600 hover:text-slate-900 px-1.5 py-0.5 transition-colors">Generating (3)</button>
+<button class="text-slate-600 hover:text-slate-900 px-1.5 py-0.5 transition-colors">Upscaling (2)</button>
+<button class="text-slate-600 hover:text-slate-900 px-1.5 py-0.5 transition-colors">Vectorizing (2)</button>
+<button class="text-slate-600 hover:text-slate-900 px-1.5 py-0.5 transition-colors">Remotion (1)</button>
+<button class="text-slate-600 hover:text-slate-900 px-1.5 py-0.5 transition-colors">Completed (4)</button>
+<button class="text-slate-600 hover:text-slate-900 px-1.5 py-0.5 transition-colors">Failed (0)</button>
+</div>
+</div>
+<!-- Hardware Telemetry Status -->
+<div class="flex items-center space-x-3 text-[10px] font-mono text-slate-500">
+<span class="flex items-center text-emerald-600 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+          System Ready
+        </span>
+<span class="">GPU: <strong class="text-blue-700 font-semibold">42%</strong></span>
+<span class="">RAM: <strong class="text-blue-700 font-semibold">68%</strong></span>
+<button class="hover:text-slate-900"><i class="ph ph-caret-down text-xs"></i></button>
+</div>
+</div>
+<!-- Task Execution Rows Queue -->
+<div class="flex-1 overflow-y-auto divide-y divide-slate-100 font-mono text-[11px] bg-white">
+<!-- Queue Row 1: Generating Text to Image -->
+<div class="h-6 px-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+<div class="flex items-center space-x-3 w-80">
+<span class="text-slate-400 w-5">#1</span>
+<span class="bg-blue-100 text-blue-700 border border-blue-200 text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase">Text to Image</span>
+<span class="text-slate-800 font-medium truncate">mountain_lake_01.png</span>
+</div>
+<div class="flex-1 max-w-xs mx-4 flex items-center space-x-2">
+<div class="flex-1 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full" style="width: 78%"></div>
+</div>
+<span class="text-[10px] text-slate-500 w-8">78%</span>
+</div>
+<div class="flex items-center space-x-6 text-slate-500 text-[10px]">
+<span class="flex items-center text-blue-600 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 mr-1.5 animate-pulse"></span>
+            Generating
+          </span>
+<span class="text-slate-500">2025-06-07 14:32</span>
+<button class="hover:text-slate-900"><i class="ph ph-dots-three text-sm"></i></button>
+</div>
+</div>
+<!-- Queue Row 2: Upscale -->
+<div class="h-6 px-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+<div class="flex items-center space-x-3 w-80">
+<span class="text-slate-400 w-5">#2</span>
+<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase">Upscale</span>
+<span class="text-slate-800 font-medium truncate">city_skyline_01.png</span>
+</div>
+<div class="flex-1 max-w-xs mx-4 flex items-center space-x-2">
+<div class="flex-1 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full rounded-full" style="width: 45%"></div>
+</div>
+<span class="text-[10px] text-slate-500 w-8">45%</span>
+</div>
+<div class="flex items-center space-x-6 text-slate-500 text-[10px]">
+<span class="flex items-center text-emerald-600 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+            Upscaling
+          </span>
+<span class="text-slate-500">2025-06-07 14:28</span>
+<button class="hover:text-slate-900"><i class="ph ph-dots-three text-sm"></i></button>
+</div>
+</div>
+<!-- Queue Row 3: Completed Vectorize -->
+<div class="h-6 px-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+<div class="flex items-center space-x-3 w-80">
+<span class="text-slate-400 w-5">#3</span>
+<span class="bg-purple-100 text-purple-700 border border-purple-200 text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase">Vectorize</span>
+<span class="text-slate-800 font-medium truncate">tiger_portrait_01.png</span>
+</div>
+<div class="flex-1 max-w-xs mx-4 flex items-center space-x-2">
+<div class="flex-1 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-purple-600 h-full rounded-full" style="width: 100%"></div>
+</div>
+<span class="text-[10px] text-slate-500 w-8">100%</span>
+</div>
+<div class="flex items-center space-x-6 text-slate-500 text-[10px]">
+<span class="flex items-center text-emerald-700 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+            Completed
+          </span>
+<span class="text-slate-500">2025-06-07 13:50</span>
+<button class="hover:text-slate-900"><i class="ph ph-dots-three text-sm"></i></button>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: BottomPersistentDockTaskCenter -->
+</body></html>

@@ -1,0 +1,34 @@
+[data-theme="light"] .metadata-module {
+  --bg-void: #f8fafc;
+  --bg-base: #f8fafc;
+  --bg-panel: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --bg-element: #ffffff;
+  --bg-hover: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-structural: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --accent-cyan: #0284c7;
+  --accent-cobalt: #2563eb;
+  --accent-cobalt-solid: #2563eb;
+  --accent-action: #2563eb;
+  --accent-indicator: #2563eb;
+  --accent-action-soft: rgba(37, 99, 235, 0.12);
+  --accent-success: #059669;
+  --accent-success-solid: #059669;
+  --accent-warning: #d97706;
+  --accent-warning-solid: #d97706;
+  --accent-error: #e11d48;
+  --accent-error-solid: #e11d48;
+  --module-studio: #2563eb;
+  --module-studio-text: #1d4ed8;
+  --status-ready-text: #059669;
+  --status-processing-text: #0284c7;
+  --status-queued-text: #2563eb;
+  --status-failed-text: #e11d48;
+  --status-cancelled-text: #64748b;
+  --status-pending-text: #d97706;
+}

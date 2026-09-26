@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-electron/
+release/
+storage/
+build/icon.png
+*.log
+.DS_Store
+.env
+.slim/deepwork/
+.visual/
+
+# Local session/log files
+session-*.md

@@ -1,0 +1,569 @@
+<!DOCTYPE html><html class="h-full bg-slate-950 text-slate-200" lang="en" style=""><head></head><body class="h-full bg-[#07090e] text-slate-300 font-sans text-xs antialiased select-none overflow-hidden flex flex-col justify-between"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>IMAGIN STUDIO - Vectorize (Vector Conversion)</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Phosphor Icons CDN for clean vector UI symbols -->
+<link href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" rel="stylesheet">
+<link href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" rel="stylesheet">
+<link href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" rel="stylesheet">
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#080a0f',
+              surface: '#0d1117',
+              panel: '#101520',
+              card: '#151b29',
+              border: '#1e2638',
+              borderLight: '#2b364e',
+              accent: '#3b82f6',
+              accentHover: '#2563eb',
+              cyan: '#06b6d4',
+              teal: '#14b8a6',
+              purple: '#8b5cf6'
+            }
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'Fira Code', 'Menlo', 'monospace'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scrollbars">
+    /* Custom sleek dark scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090c13;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e2638;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2b364e;
+    }
+  </style>
+<style data-purpose="grid-patterns">
+    .canvas-checker {
+      background-color: #0d111a;
+      background-image: linear-gradient(45deg, #090c12 25%, transparent 25%), 
+                        linear-gradient(-45deg, #090c12 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #090c12 75%), 
+                        linear-gradient(-45deg, transparent 75%, #090c12 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+    .custom-range {
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: #1e2638;
+      outline: none;
+    }
+    .custom-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+    }
+  </style>
+
+
+<!-- BEGIN: Application Chrome & Main Header -->
+
+<!-- END: Application Chrome & Main Header -->
+<!-- BEGIN: Main App Workspace -->
+<main class="flex-1 flex overflow-hidden">
+<!-- BEGIN: Left Control Sidebar -->
+<aside class="w-80 bg-[#0c0f17] border-r border-[#192133] flex flex-col justify-between flex-shrink-0" data-purpose="workflow-sidebar">
+<div class="p-3.5 space-y-4 overflow-y-auto">
+<!-- Section Title Header -->
+<div class="flex items-center justify-between pb-2 border-b border-[#182133]">
+<div class="flex items-center space-x-2 text-white font-bold tracking-wider text-[11px]">
+<i class="ph ph-bezier-curve text-blue-400 text-sm"></i>
+<span class="">WORKFLOW</span>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-cyan-950 text-cyan-400 border border-cyan-800/40">VCTR-AI v3</span>
+</div>
+<!-- Step 1: Source Upload Container -->
+<section data-purpose="step-source">
+<div class="flex items-center space-x-1.5 mb-2 font-medium text-slate-200">
+<span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] font-mono font-bold">1</span>
+<span class="">Source</span>
+</div>
+<!-- Drag and Drop Box -->
+<div class="border border-dashed border-[#232f48] bg-[#0e131d]/60 hover:bg-[#111724] rounded-lg p-3.5 text-center transition cursor-pointer flex flex-col items-center justify-center">
+<div class="w-10 h-10 rounded-lg bg-[#151c2c] border border-[#232f48] flex items-center justify-center text-slate-400 mb-2">
+<i class="ph ph-cloud-arrow-up text-lg text-blue-400"></i>
+</div>
+<p class="text-[11px] text-slate-300 font-medium">Drop file here or <span class="text-blue-400 underline">click to upload</span></p>
+<p class="text-[9px] text-slate-500 mt-1">Supported: JPG, PNG, WEBP, TIFF</p>
+<!-- Loaded File Pill -->
+<div class="mt-2.5 w-full bg-[#121927] border border-[#232e46] py-1 px-2 rounded flex items-center justify-between text-[10px] font-mono">
+<div class="flex items-center space-x-1.5 truncate">
+<span class="w-2 h-2 rounded-full bg-cyan-400 inline-block shrink-0"></span>
+<span class="text-cyan-300 truncate">Loaded: eagle_master_raw.png</span>
+</div>
+<span class="text-slate-500 shrink-0 ml-1">(4.2 MB)</span>
+</div>
+</div>
+</section>
+<!-- Step 2: Mode & Parameters -->
+<section data-purpose="step-mode">
+<div class="flex items-center space-x-1.5 mb-2 font-medium text-slate-200">
+<span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] font-mono font-bold">2</span>
+<span class="">Mode</span>
+</div>
+<!-- Quality Mode Dropdown -->
+<div class="bg-[#121825] border border-[#202a3f] rounded-lg p-2.5 mb-3 flex items-center justify-between cursor-pointer hover:border-[#2b3956] transition">
+<div class="flex items-center space-x-2.5">
+<i class="ph ph-shapes text-cyan-400 text-base"></i>
+<div>
+<p class="text-[11px] font-semibold text-slate-200 leading-none">High Quality</p>
+<p class="text-[9px] text-slate-400 mt-1 leading-none">Best for print, signage &amp; CNC</p>
+</div>
+</div>
+<i class="ph ph-caret-down text-slate-400 text-xs"></i>
+</div>
+<!-- Sliders and Micro Settings -->
+<div class="space-y-3 bg-[#0e131d] p-3 rounded-lg border border-[#192235]">
+<!-- Slider 1: Precision -->
+<div>
+<div class="flex justify-between text-[10px] font-mono mb-1">
+<span class="text-slate-400 uppercase tracking-wide">Path Precision</span>
+<span class="text-cyan-400 font-semibold">0.82px</span>
+</div>
+<input class="w-full custom-range accent-cyan-400" max="2.0" min="0.1" step="0.01" type="range" value="0.82">
+</div>
+<!-- Slider 2: Max Color Clusters -->
+<div>
+<div class="flex justify-between text-[10px] font-mono mb-1">
+<span class="text-slate-400 uppercase tracking-wide">Max Color Clusters</span>
+<span class="text-cyan-400 font-semibold">6 Palettes</span>
+</div>
+<!-- Swatches preview -->
+<div class="flex items-center space-x-1.5 pt-1">
+<span class="w-4 h-4 rounded bg-[#ffffff] border border-slate-600 block shadow-sm"></span>
+<span class="w-4 h-4 rounded bg-[#f59e0b] border border-slate-600 block shadow-sm"></span>
+<span class="w-4 h-4 rounded bg-[#d97706] border border-slate-600 block shadow-sm"></span>
+<span class="w-4 h-4 rounded bg-[#1e293b] border border-slate-600 block shadow-sm"></span>
+<span class="w-4 h-4 rounded bg-[#0f172a] border border-slate-600 block shadow-sm"></span>
+<span class="w-4 h-4 rounded bg-[#38bdf8] border border-slate-600 block shadow-sm"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Step 3: Output Format -->
+<section data-purpose="step-output">
+<div class="flex items-center space-x-1.5 mb-2 font-medium text-slate-200">
+<span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] font-mono font-bold">3</span>
+<span class="">Output</span>
+</div>
+<div class="bg-[#121825] border border-[#202a3f] rounded-lg p-2.5 flex items-center justify-between cursor-pointer hover:border-[#2b3956] transition mb-3">
+<div class="flex items-center space-x-2">
+<i class="ph ph-code text-blue-400 text-sm"></i>
+<span class="text-[11px] font-medium text-slate-200">SVG (Scalable Vector Graphics)</span>
+</div>
+<i class="ph ph-caret-up-down text-slate-400 text-xs"></i>
+</div>
+<!-- Primary Execution Button -->
+<button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow-lg shadow-blue-500/25 flex items-center justify-center space-x-2 transition cursor-pointer">
+<i class="ph ph-polygon text-base"></i>
+<span class="text-xs tracking-wide">Vectorize</span>
+</button>
+</section>
+</div>
+<!-- Decomposition Profiles Chips Footer -->
+<div class="p-3 border-t border-[#182133] bg-[#090d14]" data-purpose="decomposition-profiles">
+<p class="text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-2 font-semibold">Decomposition Profiles</p>
+<div class="flex items-center space-x-2">
+<button class="flex-1 flex items-center justify-center space-x-1 py-1 px-2 rounded bg-[#131926] border border-blue-500/40 text-blue-300 text-[10px] font-mono">
+<i class="ph ph-vector-three text-xs text-blue-400"></i>
+<span class="">Logomark</span>
+</button>
+<button class="flex-1 flex items-center justify-center space-x-1 py-1 px-2 rounded bg-[#101522] border border-[#1b2337] text-slate-400 hover:text-slate-200 text-[10px] font-mono">
+<i class="ph ph-shield-check text-xs"></i>
+<span class="">Badge Art</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- END: Left Control Sidebar -->
+<!-- BEGIN: Central Workspace Viewport -->
+<section class="flex-1 flex flex-col bg-[#07090e] overflow-hidden" data-purpose="main-canvas-workspace">
+<!-- Workspace Utility & View Controls -->
+<div class="h-10 bg-[#0b0e16] border-b border-[#182133] flex items-center justify-between px-4">
+<!-- Scale / Node Count Indicator -->
+<div class="flex items-center space-x-3 text-[11px] font-mono text-slate-400">
+<div class="flex items-center space-x-1 bg-[#121825] px-2 py-0.5 rounded border border-[#1d2639]">
+<button class="hover:text-white"><i class="ph ph-magnifying-glass-plus"></i></button>
+<button class="hover:text-white ml-1.5"><i class="ph ph-magnifying-glass-minus"></i></button>
+<button class="hover:text-white ml-1.5"><i class="ph ph-arrows-counter-clockwise"></i></button>
+<span class="w-px h-3 bg-slate-700 mx-1.5"></span>
+<button class="text-blue-400"><i class="ph ph-link-simple-horizontal"></i></button>
+</div>
+<span class="">Scale: <strong class="text-slate-200">100%</strong></span>
+<span class="text-slate-600">|</span>
+<span class="">Bézier Nodes: <strong class="text-cyan-400">384</strong></span>
+</div>
+<!-- Wireframe & Expand Buttons -->
+<div class="flex items-center space-x-2">
+<button class="flex items-center space-x-1.5 px-2.5 py-1 bg-[#121927] hover:bg-[#182236] border border-[#1e293f] rounded text-[10px] font-mono text-slate-300">
+<i class="ph ph-grid-four text-xs text-blue-400"></i>
+<span class="">Wireframe</span>
+</button>
+<button class="p-1 hover:text-white text-slate-400">
+<i class="ph ph-arrows-out-simple text-sm"></i>
+</button>
+</div>
+</div>
+<!-- Split Canvas View (Raster vs Vector) -->
+<div class="flex-1 grid grid-cols-2 gap-px bg-[#182133] overflow-hidden relative">
+<!-- Left Pane: Original Raster -->
+<div class="relative bg-[#0a0d14] flex flex-col items-center justify-center p-4 overflow-hidden group">
+<!-- Pane Badge -->
+<div class="absolute top-3 left-3 z-10 flex items-center space-x-2 bg-[#0d121c]/90 backdrop-blur border border-[#1f2b42] px-2.5 py-1 rounded shadow">
+<span class="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-semibold">Original Raster</span>
+<span class="text-[9px] font-mono text-slate-500">RGBA 8-bit</span>
+</div>
+<!-- Raster Eagle Graphic Canvas (Realistic rendered SVG representation) -->
+<div class="w-full h-full max-w-[420px] max-h-[420px] flex items-center justify-center drop-shadow-2xl">
+<svg class="w-full h-full object-contain filter contrast-125" viewBox="0 0 500 500">
+<defs>
+<linearGradient id="bgEagleGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#141a24"></stop>
+<stop offset="100%" stop-color="#080b10"></stop>
+</linearGradient>
+<radialGradient cx="50%" cy="40%" id="featherGrad" r="60%">
+<stop offset="0%" stop-color="#ffffff"></stop>
+<stop offset="45%" stop-color="#cbd5e1"></stop>
+<stop offset="85%" stop-color="#475569"></stop>
+<stop offset="100%" stop-color="#0f172a"></stop>
+</radialGradient>
+<linearGradient id="beakRealistic" x1="0%" x2="100%" y1="30%" y2="80%">
+<stop offset="0%" stop-color="#fbbf24"></stop>
+<stop offset="60%" stop-color="#d97706"></stop>
+<stop offset="100%" stop-color="#78350f"></stop>
+</linearGradient>
+</defs>
+<rect fill="url(#bgEagleGrad)" height="100%" rx="12" width="100%"></rect>
+<!-- Realistic Feather Textures & Body -->
+<path d="M120 480 C110 380 150 280 230 230 C260 210 270 170 260 140 C230 110 180 120 150 170 C130 200 120 260 90 320 C60 380 70 450 80 480 Z" fill="#1e293b" opacity="0.9"></path>
+<path d="M150 490 C180 410 220 330 300 300 C370 280 410 340 440 480 Z" fill="#0f172a"></path>
+<path d="M220 310 C250 260 300 240 370 240 C340 330 310 400 290 490 Z" fill="#334155" opacity="0.7"></path>
+<!-- Head White Feathers Layered -->
+<path d="M160 190 C150 120 210 60 300 60 C390 60 450 120 440 220 C420 260 380 280 340 290 C320 270 330 220 300 200 C270 180 220 190 190 230 C170 220 160 210 160 190 Z" fill="url(#featherGrad)"></path>
+<path d="M280 75 C340 70 410 110 400 190 C360 210 320 180 280 160 C240 140 230 90 280 75 Z" fill="#ffffff" opacity="0.85"></path>
+<path d="M210 160 C240 150 260 120 310 130 C290 170 250 190 210 160 Z" fill="#e2e8f0"></path>
+<!-- Piercing Eye -->
+<ellipse cx="285" cy="145" fill="#fef08a" rx="14" ry="11"></ellipse>
+<ellipse cx="286" cy="145" fill="#d97706" rx="9" ry="8"></ellipse>
+<circle cx="286" cy="145" fill="#020617" r="5"></circle>
+<circle cx="288" cy="143" fill="#ffffff" r="1.5"></circle>
+<!-- Brow Line -->
+<path d="M260 138 C280 130 310 134 325 145" fill="none" stroke="#475569" stroke-linecap="round" stroke-width="4"></path>
+<!-- Realistic Curved Sharp Beak -->
+<path d="M290 150 C340 150 380 170 415 225 C390 260 340 280 305 270 C290 230 295 180 290 150 Z" fill="url(#beakRealistic)"></path>
+<path d="M415 225 C420 240 405 265 375 285 C350 300 320 295 305 270 C350 275 390 255 415 225 Z" fill="#92400e"></path>
+<circle cx="320" cy="175" fill="#451a03" r="2.5"></circle>
+</svg>
+</div>
+</div>
+<!-- Right Pane: Vectorized SVG (Clean Bézier Curves) -->
+<div class="relative canvas-checker flex flex-col items-center justify-center p-4 overflow-hidden group">
+<!-- Pane Badge -->
+<div class="absolute top-3 left-3 z-10 flex items-center space-x-2 bg-[#0b121e]/90 backdrop-blur border border-blue-500/40 px-2.5 py-1 rounded shadow-lg">
+<span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+<span class="text-[10px] font-mono uppercase tracking-wider text-blue-300 font-semibold">Vectorized SVG</span>
+<span class="text-[9px] font-mono text-cyan-400 border-l border-slate-700 pl-1.5">Clean Bézier Curves</span>
+</div>
+<!-- Stylized Sharp Modern Vector Logo -->
+<div class="w-full h-full max-w-[420px] max-h-[420px] flex items-center justify-center drop-shadow-[0_15px_30px_rgba(2,132,199,0.3)]">
+<svg class="w-full h-full object-contain" viewBox="0 0 500 500">
+<!-- Deep Navy Shadow Outlines -->
+<g fill="#08152c" id="vector-outer-crest" stroke="#0e2a5a" stroke-linejoin="round" stroke-width="6">
+<path d="M250 40 L380 120 L440 250 L390 380 L250 470 L190 380 L140 270 L170 130 Z"></path>
+</g>
+<!-- Outer White Spikes / Feather Blades -->
+<path d="M250 65 L350 135 L330 200 L415 225 L340 310 L370 330 L250 445 L215 365 L170 340 L210 260 L155 235 L225 155 Z" fill="#ffffff" stroke="#1d4ed8" stroke-linejoin="round" stroke-width="4"></path>
+<!-- Inner Blue Contrast Cuts -->
+<path d="M225 155 L320 160 L280 220 L350 230 L270 310 L285 350 L250 400 L225 330 L255 300 L210 260 Z" fill="#1e3a8a"></path>
+<!-- Sharp Beak (Stylized Vector) -->
+<polygon fill="#f59e0b" points="275,190 425,235 340,310 285,270" stroke="#78350f" stroke-linejoin="round" stroke-width="3"></polygon>
+<polygon fill="#d97706" points="340,310 425,235 360,325 305,320"></polygon>
+<!-- Cyan Vector Highlight on Beak -->
+<path d="M295 210 L395 240 L340 270 Z" fill="#fbbf24"></path>
+<!-- Aggressive Vector Eye -->
+<polygon fill="#fef08a" points="255,185 295,190 275,205 245,198" stroke="#000" stroke-width="2"></polygon>
+<polygon fill="#0f172a" points="268,188 285,191 275,202"></polygon>
+<circle cx="278" cy="193" fill="#ffffff" r="2"></circle>
+<!-- Eye Slit Brow Vector -->
+<path d="M235 178 L310 185 L285 172 Z" fill="#091428"></path>
+<!-- Neck Feather Accents -->
+<polygon fill="#38bdf8" points="250,445 270,370 250,390 230,370"></polygon>
+<polygon fill="#ffffff" points="285,350 320,335 295,370"></polygon>
+</svg>
+</div>
+</div>
+</div>
+<!-- BEGIN: Bottom Carousel / Filmstrip -->
+<div class="h-24 bg-[#0a0d14] border-t border-[#192235] px-4 flex items-center justify-between flex-shrink-0" data-purpose="history-filmstrip">
+<button class="w-7 h-7 rounded bg-[#131926] hover:bg-[#1c2538] border border-[#212c44] flex items-center justify-center text-slate-400 hover:text-white transition cursor-pointer">
+<i class="ph ph-caret-left-bold text-xs"></i>
+</button>
+<div class="flex items-center space-x-3 overflow-x-auto py-1 px-2">
+<!-- Item 1 (Active Eagle) -->
+<div class="relative group cursor-pointer">
+<div class="w-16 h-16 rounded-lg bg-[#141b2b] border-2 border-blue-500 overflow-hidden flex items-center justify-center p-1 shadow-md shadow-blue-500/20">
+<svg class="w-full h-full object-contain" viewBox="0 0 500 500">
+<polygon fill="#ffffff" points="250,60 380,140 330,220 415,240 340,330 250,440 180,340 230,250 160,230" stroke="#2563eb" stroke-width="12"></polygon>
+<polygon fill="#f59e0b" points="280,200 410,240 340,305 285,270"></polygon>
+</svg>
+</div>
+<span class="absolute bottom-0.5 inset-x-1 bg-blue-600/90 backdrop-blur text-white text-[8px] font-mono text-center rounded py-0.2">Active</span>
+</div>
+<!-- Item 2 (Vector Shield Graphic) -->
+<div class="w-16 h-16 rounded-lg bg-[#0e131e] border border-[#1d2639] hover:border-slate-500 overflow-hidden flex items-center justify-center p-1 cursor-pointer transition">
+<svg class="w-10 h-10" viewBox="0 0 100 100">
+<path d="M50 15 L80 28 V55 C80 72 50 88 50 88 C50 88 20 72 20 55 V28 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="3"></path>
+<path d="M40 45 L50 35 L60 45 L50 65 Z" fill="#fbbf24"></path>
+</svg>
+</div>
+<!-- Item 3 (Cyber Lion Badge) -->
+<div class="w-16 h-16 rounded-lg bg-[#0e131e] border border-[#1d2639] hover:border-slate-500 overflow-hidden flex items-center justify-center p-1 cursor-pointer transition">
+<svg class="w-10 h-10" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="#0f172a" r="38" stroke="#06b6d4" stroke-dasharray="4 2" stroke-width="2.5"></circle>
+<polygon fill="#0284c7" points="50,25 65,45 58,70 42,70 35,45"></polygon>
+<circle cx="50" cy="50" fill="#22d3ee" r="8"></circle>
+</svg>
+</div>
+<!-- Item 4 (Abstract Geometry) -->
+<div class="w-16 h-16 rounded-lg bg-[#0e131e] border border-[#1d2639] hover:border-slate-500 overflow-hidden flex items-center justify-center p-1 cursor-pointer transition">
+<svg class="w-10 h-10" viewBox="0 0 100 100">
+<rect fill="none" height="50" rx="8" stroke="#a855f7" stroke-width="3" transform="rotate(45 50 50)" width="50" x="25" y="25"></rect>
+<circle cx="50" cy="50" fill="#6366f1" r="14"></circle>
+</svg>
+</div>
+<!-- Item 5 (Monogram Emblem) -->
+<div class="w-16 h-16 rounded-lg bg-[#0e131e] border border-[#1d2639] hover:border-slate-500 overflow-hidden flex items-center justify-center p-1 cursor-pointer transition">
+<svg class="w-10 h-10" viewBox="0 0 100 100">
+<polygon fill="#1e293b" points="50,15 85,80 15,80" stroke="#64748b" stroke-width="3"></polygon>
+<line stroke="#f43f5e" stroke-width="3" x1="30" x2="70" y1="60" y2="60"></line>
+</svg>
+</div>
+</div>
+<button class="w-7 h-7 rounded bg-[#131926] hover:bg-[#1c2538] border border-[#212c44] flex items-center justify-center text-slate-400 hover:text-white transition cursor-pointer">
+<i class="ph ph-caret-right-bold text-xs"></i>
+</button>
+</div>
+<!-- END: Bottom Carousel / Filmstrip -->
+</section>
+<!-- END: Central Workspace Viewport -->
+<!-- BEGIN: Right Inspector Panel -->
+<aside class="w-80 bg-[#0c0f17] border-l border-[#192133] flex flex-col justify-between flex-shrink-0" data-purpose="inspector-sidebar">
+<div class="p-3.5 space-y-4 overflow-y-auto">
+<!-- Inspector Segmented Switcher -->
+<div class="grid grid-cols-2 bg-[#121825] p-1 rounded-lg border border-[#1d2639]">
+<button class="py-1 rounded-md text-[11px] font-semibold bg-[#1d273c] text-white shadow">Image</button>
+<button class="py-1 rounded-md text-[11px] font-semibold text-slate-400 hover:text-slate-200">Metadata</button>
+</div>
+<!-- Selected Asset Info Card -->
+<div class="bg-[#0f1420] border border-[#1b2438] p-3 rounded-lg flex items-center space-x-3">
+<div class="w-12 h-12 rounded bg-[#172033] border border-blue-500/30 flex items-center justify-center shrink-0">
+<i class="ph ph-file-svg text-2xl text-cyan-400"></i>
+</div>
+<div class="truncate">
+<p class="text-[12px] font-bold text-white truncate font-mono">Eagle_Logo.svg</p>
+<p class="text-[10px] text-cyan-400 font-mono">Vector / Scalable Path</p>
+<p class="text-[9px] text-slate-500 mt-0.5">Ready for production</p>
+</div>
+</div>
+<!-- Asset Specifications Table -->
+<div class="bg-[#0e131d] border border-[#1a2336] rounded-lg divide-y divide-[#182133] text-[11px] font-mono">
+<div class="flex justify-between px-3 py-1.5">
+<span class="text-slate-400">Size</span>
+<span class="text-slate-200 font-semibold">245 KB</span>
+</div>
+<div class="flex justify-between px-3 py-1.5">
+<span class="text-slate-400">Dimensions</span>
+<span class="text-slate-200">1024 × 1024</span>
+</div>
+<div class="flex justify-between px-3 py-1.5">
+<span class="text-slate-400">Colors</span>
+<span class="text-cyan-400 font-semibold">6 colors</span>
+</div>
+<div class="flex justify-between px-3 py-1.5">
+<span class="text-slate-400">Paths</span>
+<span class="text-slate-200 font-semibold">142</span>
+</div>
+<div class="flex justify-between px-3 py-1.5">
+<span class="text-slate-400">Complexity</span>
+<span class="text-amber-400 font-semibold">Moderate</span>
+</div>
+<div class="flex justify-between px-3 py-1.5">
+<span class="text-slate-400">Created</span>
+<span class="text-slate-400 text-[10px]">2025-09-07 15:10</span>
+</div>
+</div>
+<!-- Download & Open Editor Action Buttons -->
+<div class="space-y-2 pt-1">
+<button class="w-full bg-[#2563eb] hover:bg-blue-600 text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-2 text-xs shadow-md shadow-blue-600/30 transition">
+<i class="ph ph-download-simple text-sm"></i>
+<span class="">Download</span>
+</button>
+<button class="w-full bg-[#131926] hover:bg-[#1a2335] text-slate-300 border border-[#222d44] font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-2 text-xs transition">
+<i class="ph ph-arrow-square-out text-sm"></i>
+<span class="">Open in Editor</span>
+</button>
+</div>
+<!-- Topology Analysis Diagnostic Box -->
+<section data-purpose="topology-analysis">
+<p class="text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-2 font-bold">Topology Analysis</p>
+<div class="bg-[#0b0f17] border border-[#1b2438] p-3 rounded-lg space-y-2 text-[10px] font-mono">
+<div class="flex justify-between">
+<span class="text-slate-400">Closed Polygons</span>
+<span class="text-slate-200 font-semibold">118</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-400">Bézier Anchors</span>
+<span class="text-cyan-400 font-semibold">1,420</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-400">Fill Compatibility</span>
+<span class="text-emerald-400 font-semibold">CMYK Safe</span>
+</div>
+</div>
+</section>
+</div>
+</aside>
+<!-- END: Right Inspector Panel -->
+</main>
+<!-- END: Main App Workspace -->
+<!-- BEGIN: Bottom Task Center Dock -->
+<footer class="bg-[#090c13] border-t border-[#182133] px-3.5 py-2 flex-shrink-0 z-50 text-[10px] font-mono" data-purpose="bottom-task-dock">
+<!-- Dock Header Status Ribbon -->
+<div class="flex items-center justify-between border-b border-[#141b2a] pb-1.5 mb-1.5">
+<!-- Filter Categories -->
+<div class="flex items-center space-x-3">
+<div class="flex items-center space-x-1 text-slate-200 font-bold uppercase tracking-wider">
+<i class="ph ph-terminal-window text-cyan-400 text-sm"></i>
+<span class="">TASK CENTER</span>
+</div>
+<span class="text-slate-700">|</span>
+<button class="px-2 py-0.5 rounded bg-[#172134] text-cyan-300 font-semibold border border-cyan-800/40">All (12)</button>
+<button class="text-slate-400 hover:text-slate-200">Generating (3)</button>
+<button class="text-slate-400 hover:text-slate-200">Upscaling (2)</button>
+<button class="text-slate-400 hover:text-slate-200">Vectorizing (2)</button>
+<button class="text-slate-400 hover:text-slate-200">Remotion (1)</button>
+<button class="text-slate-400 hover:text-slate-200">Completed (4)</button>
+<button class="text-slate-500 hover:text-slate-400">Failed (0)</button>
+</div>
+<!-- Live Hardware Engine Telemetry -->
+<div class="flex items-center space-x-4 text-slate-400">
+<div class="flex items-center space-x-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="text-slate-300">System Ready</span>
+</div>
+<div class="">GPU: <span class="text-cyan-400 font-semibold">42%</span></div>
+<div class="">RAM: <span class="text-blue-400 font-semibold">68%</span></div>
+<button class="text-slate-400 hover:text-slate-200"><i class="ph ph-caret-down"></i></button>
+</div>
+</div>
+<!-- Active Tasks Matrix Rows -->
+<div class="space-y-1">
+<!-- Job 1 -->
+<div class="grid grid-cols-12 items-center text-slate-300 hover:bg-[#0e1420] px-2 py-1 rounded transition">
+<div class="col-span-1 text-slate-500">#1</div>
+<div class="col-span-2 flex items-center space-x-1.5 text-blue-400">
+<i class="ph ph-sparkle text-xs"></i>
+<span class="">Text to Image</span>
+</div>
+<div class="col-span-3 text-slate-300 truncate">mountain_lake_01.png</div>
+<div class="col-span-3 flex items-center space-x-2">
+<div class="w-36 h-1.5 bg-[#172033] rounded-full overflow-hidden">
+<div class="h-full bg-cyan-400 rounded-full" style="width: 78%"></div>
+</div>
+<span class="text-slate-400 text-[9px]">78%</span>
+</div>
+<div class="col-span-2 flex items-center space-x-1 text-amber-400">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block animate-ping"></span>
+<span class="">Generating</span>
+</div>
+<div class="col-span-1 text-right text-slate-500 font-mono">14:32</div>
+</div>
+<!-- Job 2 -->
+<div class="grid grid-cols-12 items-center text-slate-300 hover:bg-[#0e1420] px-2 py-1 rounded transition">
+<div class="col-span-1 text-slate-500">#2</div>
+<div class="col-span-2 flex items-center space-x-1.5 text-purple-400">
+<i class="ph ph-arrow-up-right text-xs"></i>
+<span class="">Upscale</span>
+</div>
+<div class="col-span-3 text-slate-300 truncate">city_skyline_01.png</div>
+<div class="col-span-3 flex items-center space-x-2">
+<div class="w-36 h-1.5 bg-[#172033] rounded-full overflow-hidden">
+<div class="h-full bg-purple-500 rounded-full" style="width: 45%"></div>
+</div>
+<span class="text-slate-400 text-[9px]">45%</span>
+</div>
+<div class="col-span-2 flex items-center space-x-1 text-purple-400">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block"></span>
+<span class="">Upscaling</span>
+</div>
+<div class="col-span-1 text-right text-slate-500 font-mono">14:28</div>
+</div>
+<!-- Job 3 -->
+<div class="grid grid-cols-12 items-center text-slate-300 hover:bg-[#0e1420] px-2 py-1 rounded transition">
+<div class="col-span-1 text-slate-500">#3</div>
+<div class="col-span-2 flex items-center space-x-1.5 text-cyan-400">
+<i class="ph ph-vector-two text-xs"></i>
+<span class="">Vectorize</span>
+</div>
+<div class="col-span-3 text-slate-300 truncate">tiger_portrait_01.png</div>
+<div class="col-span-3 flex items-center space-x-2">
+<div class="w-36 h-1.5 bg-[#172033] rounded-full overflow-hidden">
+<div class="h-full bg-emerald-400 rounded-full" style="width: 100%"></div>
+</div>
+<span class="text-emerald-400 text-[9px]">100%</span>
+</div>
+<div class="col-span-2 flex items-center space-x-1 text-emerald-400">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+<span class="">Completed</span>
+</div>
+<div class="col-span-1 text-right text-slate-500 font-mono">13:50</div>
+</div>
+</div>
+</footer>
+<!-- END: Bottom Task Center Dock -->
+<!-- Interactive Demo Behaviors -->
+<script data-purpose="ui-interactions">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle Wireframe Mode on Vector Canvas
+      const wireframeBtn = document.querySelector('button:has(.ph-grid-four)');
+      const vectorSvg = document.querySelector('[data-purpose="main-canvas-workspace"] .canvas-checker svg');
+      
+      if (wireframeBtn && vectorSvg) {
+        wireframeBtn.addEventListener('click', () => {
+          vectorSvg.classList.toggle('stroke-cyan-400');
+          vectorSvg.classList.toggle('fill-transparent');
+          wireframeBtn.classList.toggle('bg-blue-600');
+          wireframeBtn.classList.toggle('text-white');
+        });
+      }
+    });
+  </script>
+
+
+</body></html>

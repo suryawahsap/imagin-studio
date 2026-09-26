@@ -1,0 +1,137 @@
+{
+  "name": "imagin-studio",
+  "private": true,
+  "version": "0.0.0",
+  "description": "IMAGIN STUDIO — desktop studio (generate, vectorize, upscale, animate, galery)",
+  "author": "IMAGIN",
+  "type": "module",
+  "main": "dist-electron/main.cjs",
+  "scripts": {
+    "dev": "npm run electron:build && vite",
+    "dev:electron": "npm run electron:build && electron .",
+    "dev:vite": "vite",
+    "start": "npm run build && IMAGIN_PROD=1 electron .",
+    "check": "npm run lint && npm run test && npx tsx scripts/test-9router-models.ts",
+    "start:all": "npm run check && npm run start",
+    "electron:build": "node esbuild-electron.mjs",
+    "electron:watch": "node esbuild-electron.mjs --watch",
+    "electron": "electron .",
+    "build": "vite build && npm run electron:build",
+    "clean": "rm -rf dist dist-electron release",
+    "lint": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
+    "test": "npm run test:import && npm run test:service-smoke",
+    "test:import": "tsx scripts/test-import.ts",
+    "test:service-smoke": "tsx scripts/test-ipc.ts",
+    "test:studio-store": "tsx scripts/test-studio-store.ts",
+    "test:batch-resume": "tsx scripts/test-batch-resume.ts",
+    "test:state-reducers": "tsx scripts/test-state-reducers.ts",
+    "test:ai-bridge": "tsx scripts/test-ai-bridge.ts",
+    "test:registry-contract": "tsx scripts/test-registry-contract.ts",
+    "test:pipeline-contract": "tsx scripts/test-pipeline-contract.ts",
+    "test:storage-ipc": "tsx scripts/test-storage-ipc.ts",
+    "test:studio-prefs": "tsx scripts/test-studio-prefs.ts",
+    "test:fase4-wave1": "tsx scripts/test-fase4-wave1.ts",
+    "test:fase4-wave2": "tsx scripts/test-fase4-wave2.ts",
+    "test:fase4-wave3": "tsx scripts/test-fase4-wave3.ts",
+    "test:protocol": "electron --headless --disable-gpu --no-sandbox --require tsx/cjs scripts/test-protocol.ts",
+    "test:is-specific-user-input": "tsx scripts/test-is-specific-user-input.mjs",
+    "test:sanitize-icon-theme-input": "tsx scripts/test-sanitize-icon-theme-input.mjs",
+    "test:aspect-ratio-to-css": "tsx scripts/test-aspect-ratio-to-css.ts",
+    "test:file-size-from-data-url": "tsx scripts/test-file-size-from-data-url.ts",
+    "test:megapixels-of": "tsx scripts/test-megapixels-of.ts",
+    "test:pipeline": "tsx scripts/test-pipeline.ts",
+    "test:integration": "npm run test:pipeline",
+    "dist": "vite build && npm run electron:build && electron-builder",
+    "dist:dir": "vite build && npm run electron:build && electron-builder --dir",
+    "dist:linux": "vite build && npm run electron:build && electron-builder --linux AppImage",
+    "dist:win": "vite build && npm run electron:build && electron-builder --win nsis",
+    "dist:mac": "vite build && npm run electron:build && electron-builder --mac dmg",
+    "test:library-sync-renderer": "tsx scripts/test-library-sync-renderer.ts",
+    "test:asset-status": "tsx scripts/test-asset-status.ts",
+    "test:metadata-queue": "tsx scripts/test-metadata-queue.ts",
+    "test:metadata-engine": "tsx scripts/test-metadata-engine.ts",
+    "test:metadata-sync": "tsx scripts/test-studio-metadata-sync.ts",
+    "test:metadata-export": "tsx scripts/test-metadata-export.ts",
+    "test:vec-bg-remove": "tsx scripts/test-vec-bg-remove.ts",
+    "visual:check": "node scripts/visual-capture.mjs"
+  },
+  "build": {
+    "appId": "com.imagin.studio",
+    "productName": "IMAGIN STUDIO",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/onnxruntime-node/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "electron/bin/linux",
+        "to": "bin/linux"
+      },
+      {
+        "from": "electron/bin/win32",
+        "to": "bin/win32"
+      },
+      {
+        "from": "electron/bin/darwin",
+        "to": "bin/darwin"
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Graphics",
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.graphics-design",
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@vitejs/plugin-react": "^5.0.4",
+    "adm-zip": "^0.6.0",
+    "framer-motion": "^11.18.2",
+    "lucide-react": "^0.546.0",
+    "onnxruntime-node": "^1.27.0",
+    "pngjs": "^7.0.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "svgo": "^4.0.2",
+    "vite": "^6.2.3"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
+    "@types/node": "^22.14.0",
+    "@types/pngjs": "^6.0.5",
+    "autoprefixer": "^10.4.21",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3"
+  }
+}

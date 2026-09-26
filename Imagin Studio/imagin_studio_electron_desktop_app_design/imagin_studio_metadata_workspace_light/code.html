@@ -1,0 +1,790 @@
+<!DOCTYPE html><html class="h-full bg-[#f8fafc] text-slate-800 antialiased select-none" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>IMAGIN STUDIO - Metadata Creation Workspace</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#f8fafc',
+              surface: '#ffffff',
+              panel: '#ffffff',
+              card: '#f1f5f9',
+              cardHover: '#e2e8f0',
+              border: '#e2e8f0',
+              borderSubtle: '#f1f5f9',
+              accent: '#2563eb',
+              accentHover: '#1d4ed8',
+              cyan: '#0284c7',
+              emerald: '#059669',
+              amber: '#d97706',
+              rose: '#e11d48'
+            }
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+          },
+          fontSize: {
+            '2xs': '0.65rem',
+            '3xs': '0.58rem'
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom App Styles -->
+<style data-purpose="custom-scrollbars">
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+<style data-purpose="custom-glows">
+    .glow-cyan-subtle {
+      box-shadow: 0 0 15px -3px rgba(2, 132, 199, 0.15);
+    }
+    .glow-accent {
+      box-shadow: 0 1px 3px 0 rgba(37, 99, 235, 0.25), 0 1px 2px -1px rgba(37, 99, 235, 0.25);
+    }
+  </style>
+<!-- END: Custom App Styles -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"></head>
+<body class="h-full w-full overflow-hidden flex flex-col font-sans text-xs bg-[#f8fafc] text-slate-800">
+<!-- BEGIN: Top Window Chrome & Navigation Bar -->
+
+<!-- END: Top Window Chrome & Navigation Bar -->
+<!-- BEGIN: Main Workspace Canvas Area -->
+<div class="flex-1 flex overflow-hidden">
+<!-- BEGIN: Left Sidebar (Asset Queue) -->
+<aside class="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0">
+<!-- Queue Header with Progress Summary -->
+<div class="p-2.5 border-b border-slate-200 bg-slate-50/50">
+<div class="flex items-center justify-between text-[11px] font-semibold tracking-wider text-slate-700 uppercase mb-1">
+<span class="flex items-center space-x-1.5">
+<svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Asset Queue</span>
+</span>
+<span class="text-blue-600 font-mono text-[10px] font-bold">94%</span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-500 mb-1">
+<span class="">Production Progress</span>
+<span class="font-mono text-slate-700 font-medium">47 / 50 completed</span>
+</div>
+<!-- Progress bar -->
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 94%"></div>
+</div>
+<!-- Search asset box -->
+<div class="relative mt-2.5">
+<svg class="w-3.5 h-3.5 absolute left-2 top-2 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<input class="w-full bg-white border border-slate-200 rounded px-2.5 py-1 pl-7 text-[11px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-sm" placeholder="Search assets..." type="text">
+</div>
+<!-- Filter tabs -->
+<div class="flex items-center space-x-1 mt-2 text-[10px]">
+<button class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">All</button>
+<button class="px-2 py-0.5 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900">Needs Metadata</button>
+<button class="px-2 py-0.5 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900">Generating</button>
+<button class="px-2 py-0.5 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900">Generated</button>
+</div>
+</div>
+<!-- Asset Queue List Items -->
+<div class="flex-1 overflow-y-auto divide-y divide-slate-100 p-1.5 space-y-1">
+<!-- Item 1: Selected (tiger_vector.svg) -->
+<div class="p-2 rounded bg-blue-50/60 border border-blue-300 relative cursor-pointer hover:border-blue-500 transition-all shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded text-3xs font-mono font-bold">SVG</span>
+<span class="text-[11px] font-semibold text-slate-900 truncate max-w-[130px]">tiger_vector.svg</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-500 mt-1">
+<span class="">Vector • 1024 × 1024</span>
+<span class="text-emerald-600 font-mono font-medium flex items-center space-x-0.5">
+<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Metadata Ready</span>
+</span>
+</div>
+<div class="text-right text-3xs text-slate-500 font-mono mt-0.5 font-medium">38 tags</div>
+</div>
+<!-- Item 2: city_sunset.png -->
+<div class="p-2 rounded bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 cursor-pointer shadow-xs transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1 py-0.5 bg-blue-100 text-blue-800 border border-blue-200 rounded text-3xs font-mono font-bold">PNG</span>
+<span class="text-[11px] font-medium text-slate-800 truncate max-w-[130px]">city_sunset.png</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-500 mt-1">
+<span class="">Raster • 2048 × 2048</span>
+<span class="text-emerald-600 font-mono font-medium flex items-center space-x-0.5">
+<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Metadata Ready</span>
+</span>
+</div>
+<div class="text-right text-3xs text-slate-400 font-mono mt-0.5">42 tags</div>
+</div>
+<!-- Item 3: mountain_lake.png -->
+<div class="p-2 rounded bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 cursor-pointer shadow-xs transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1 py-0.5 bg-blue-100 text-blue-800 border border-blue-200 rounded text-3xs font-mono font-bold">PNG</span>
+<span class="text-[11px] font-medium text-slate-800 truncate max-w-[130px]">mountain_lake.png</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-500 mt-1">
+<span class="">Raster • 1920 × 1080</span>
+<span class="text-blue-600 font-mono font-medium flex items-center space-x-1">
+<span class="inline-block animate-spin text-[9px]">↻</span>
+<span class="">Generating</span>
+</span>
+</div>
+<div class="text-right text-3xs text-slate-400 font-mono mt-0.5">78%</div>
+</div>
+<!-- Item 4: forest_falls.jpg -->
+<div class="p-2 rounded bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 cursor-pointer shadow-xs transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1 py-0.5 bg-indigo-100 text-indigo-800 border border-indigo-200 rounded text-3xs font-mono font-bold">JPG</span>
+<span class="text-[11px] font-medium text-slate-800 truncate max-w-[130px]">forest_falls.jpg</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-500 mt-1">
+<span class="">Raster • 1920 × 1080</span>
+<span class="text-amber-600 font-mono font-medium flex items-center space-x-0.5">
+<span class="">⚠ Needs Review</span>
+</span>
+</div>
+<div class="text-right text-3xs text-slate-400 font-mono mt-0.5">Stock rules</div>
+</div>
+<!-- Item 5: cyber_suit.png -->
+<div class="p-2 rounded bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 cursor-pointer shadow-xs transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1 py-0.5 bg-blue-100 text-blue-800 border border-blue-200 rounded text-3xs font-mono font-bold">PNG</span>
+<span class="text-[11px] font-medium text-slate-700 truncate max-w-[130px]">cyber_suit.png</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-slate-300"></span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+<span class="">Raster • 1024 × 1024</span>
+<span class="text-slate-500 font-mono">Not Generated</span>
+</div>
+<div class="text-right text-3xs text-blue-600 font-mono font-semibold mt-0.5 hover:underline">+ AI Generate</div>
+</div>
+<!-- Item 6: drone_footage.mp4 -->
+<div class="p-2 rounded bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 cursor-pointer shadow-xs transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1 py-0.5 bg-rose-100 text-rose-800 border border-rose-200 rounded text-3xs font-mono font-bold">MP4</span>
+<span class="text-[11px] font-medium text-slate-700 truncate max-w-[130px]">drone_footage.mp4</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-rose-500"></span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+<span class="">Video • 3840 × 2160</span>
+<span class="text-rose-600 font-mono font-medium flex items-center space-x-0.5">
+<span class="">✕ Invalid</span>
+</span>
+</div>
+<div class="text-right text-3xs text-slate-400 font-mono mt-0.5">Min 5 tags</div>
+</div>
+</div>
+<!-- Queue Footer summary link -->
+<div class="p-2.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-[10px] text-slate-500">
+<div class="flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="">47 / 50 assets completed (94%)</span>
+</div>
+<button class="text-blue-600 hover:text-blue-700 font-semibold">Queue Settings</button>
+</div>
+</aside>
+<!-- END: Left Sidebar (Asset Queue) -->
+<!-- BEGIN: Center Metadata Workspace -->
+<main class="flex-1 bg-[#f8fafc] flex flex-col overflow-y-auto border-r border-slate-200">
+<!-- Center Title & Status Header -->
+<div class="p-3 border-b border-slate-200 bg-white flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<h2 class="text-xs font-bold uppercase tracking-wider text-slate-900">Metadata Workspace</h2>
+<span class="text-slate-300">•</span>
+<span class="font-mono text-blue-600 font-semibold text-xs">tiger_vector.svg</span>
+<span class="px-1.5 py-0.2 bg-blue-50 text-blue-700 text-3xs rounded font-mono border border-blue-200">Vector</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] flex items-center space-x-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="">Metadata Ready</span>
+</span>
+<button class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+</div>
+<!-- Center Action Toolbar -->
+<div class="px-4 py-2 border-b border-slate-200 bg-white flex items-center justify-between text-xs">
+<div class="flex items-center space-x-2">
+<button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium shadow-sm flex items-center space-x-1.5 transition-all glow-accent">
+<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" fill-rule="evenodd"></path></svg>
+<span class="">Generate All</span>
+</button>
+<div class="relative inline-flex">
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 rounded border border-slate-300 shadow-xs flex items-center space-x-1">
+<span class="">Regenerate</span>
+<svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 rounded border border-slate-300 shadow-xs flex items-center space-x-1">
+<svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Validate</span>
+</button>
+<button class="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 rounded border border-slate-300 shadow-xs flex items-center space-x-1">
+<svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Compare</span>
+</button>
+</div>
+<!-- Mode switch -->
+<div class="flex items-center space-x-2 text-slate-700 font-medium">
+<svg class="w-3 h-3 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"></path></svg>
+<span class="text-[11px]">Batch Queue Mode</span>
+<button class="w-8 h-4 rounded-full bg-blue-600 p-0.5 flex items-center justify-end shadow-inner">
+<span class="w-3 h-3 rounded-full bg-white shadow-sm inline-block"></span>
+</button>
+</div>
+</div>
+<!-- Preview Canvas Section -->
+<div class="p-3 bg-slate-100/70 border-b border-slate-200">
+<div class="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+<!-- Canvas Bar -->
+<div class="px-3 py-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
+<div class="flex items-center space-x-2">
+<svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="font-bold text-slate-800 uppercase tracking-wider text-2xs">Preview Canvas</span>
+<span class="text-slate-300">•</span>
+<span class="text-2xs font-mono text-slate-600">Vector / Scalable Path</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.2 bg-white text-slate-700 font-mono text-3xs rounded border border-slate-200 shadow-xs">100%</span>
+<span class="text-2xs text-slate-500 font-medium">Fit</span>
+<button class="p-0.5 text-slate-500 hover:text-slate-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="p-0.5 text-slate-500 hover:text-slate-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+<button class="p-0.5 text-slate-500 hover:text-slate-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>
+</div>
+</div>
+<!-- Canvas Render Frame -->
+<div class="h-44 bg-white flex items-center justify-center relative overflow-hidden">
+<!-- Subtle grid pattern background -->
+<div class="absolute inset-0 opacity-40 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<!-- Stylized Geometric Cybernetic Tiger SVG Vector Representation -->
+<div class="relative z-10 w-32 h-32 flex items-center justify-center">
+<svg class="w-28 h-28 text-blue-600 drop-shadow-[0_4px_12px_rgba(37,99,235,0.15)]" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 100 100">
+<!-- Circular vector anchor border -->
+<circle cx="50" cy="50" r="44" stroke="#cbd5e1" stroke-dasharray="3 3" stroke-width="1"></circle>
+<!-- Geometric Tiger Ears -->
+<polygon fill="#f59e0b" fill-opacity="0.15" points="24,30 35,16 42,32" stroke="#d97706"></polygon>
+<polygon fill="#f59e0b" fill-opacity="0.15" points="76,30 65,16 58,32" stroke="#d97706"></polygon>
+<!-- Tiger Crown & Forehead -->
+<polygon points="50,18 42,32 58,32" stroke="#0284c7"></polygon>
+<polygon points="35,32 50,32 42,46" stroke="#2563eb"></polygon>
+<polygon points="65,32 50,32 58,46" stroke="#2563eb"></polygon>
+<!-- Eyes -->
+<polygon fill="#f59e0b" points="32,45 42,46 37,50" stroke="#d97706"></polygon>
+<polygon fill="#f59e0b" points="68,45 58,46 63,50" stroke="#d97706"></polygon>
+<!-- Nose & Bridge -->
+<polygon fill="#0284c7" fill-opacity="0.2" points="42,46 58,46 50,62" stroke="#0284c7"></polygon>
+<!-- Cheeks -->
+<polygon points="20,48 32,45 28,64" stroke="#1d4ed8"></polygon>
+<polygon points="80,48 68,45 72,64" stroke="#1d4ed8"></polygon>
+<polygon points="28,64 42,62 36,78" stroke="#0284c7"></polygon>
+<polygon points="72,64 58,62 64,78" stroke="#0284c7"></polygon>
+<!-- Muzzle & Chin -->
+<polygon points="42,62 50,62 50,72 44,74" stroke="#d97706"></polygon>
+<polygon points="58,62 50,62 50,72 56,74" stroke="#d97706"></polygon>
+<polygon fill="#0284c7" fill-opacity="0.15" points="44,74 50,72 56,74 50,82" stroke="#0284c7"></polygon>
+<!-- Whiskers -->
+<line stroke="#2563eb" stroke-width="1.2" x1="22" x2="10" y1="62" y2="60"></line>
+<line stroke="#2563eb" stroke-width="1.2" x1="22" x2="8" y1="66" y2="70"></line>
+<line stroke="#2563eb" stroke-width="1.2" x1="78" x2="90" y1="62" y2="60"></line>
+<line stroke="#2563eb" stroke-width="1.2" x1="78" x2="92" y1="66" y2="70"></line>
+</svg>
+</div>
+<!-- Path overlay telemetry tags -->
+<div class="absolute bottom-2 left-3 text-3xs font-mono text-slate-600 bg-white/95 px-2 py-0.5 rounded border border-slate-200 shadow-xs">
+              Paths: 142 • Points: 1,840 • Colors: 6 RGB
+            </div>
+</div>
+</div>
+</div>
+<!-- AI Metadata Banner Card -->
+<div class="mx-3 mt-3 p-2 rounded border border-blue-200 bg-blue-50/60 flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+<span class="text-slate-800 font-semibold text-2xs flex items-center space-x-1">
+<span class="">AI Metadata Generated</span>
+<svg class="w-3 h-3 text-emerald-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</span>
+<span class="text-slate-500 text-3xs">— AI analyzes visual content, profile, production context &amp; platform rules</span>
+</div>
+<div class="text-3xs text-blue-700 font-mono font-medium px-1.5 py-0.5 rounded bg-blue-100 border border-blue-300">
+          Engine: Flux Meta-V3
+        </div>
+</div>
+<!-- Metadata Form Fields Container -->
+<div class="p-3 space-y-3 flex-1 bg-white">
+<!-- Title Field -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<label class="text-[11px] font-semibold text-slate-800 flex items-center space-x-1">
+<span class="">Title</span>
+<span class="text-rose-500">*</span>
+<span class="text-slate-400 font-mono font-normal text-3xs">(58 / 200 chars)</span>
+</label>
+<button class="text-blue-600 hover:text-blue-700 font-medium text-3xs flex items-center space-x-1">
+<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Regenerate Title</span>
+</button>
+</div>
+<input class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-900 font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all shadow-2xs" type="text" value="Tiger Vector Logo Illustration - Minimalist Cybernetic Mascot">
+</div>
+<!-- Description Field -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<label class="text-[11px] font-semibold text-slate-800 flex items-center space-x-1">
+<span class="">Description</span>
+<span class="text-slate-400 font-mono font-normal text-3xs">(174 / 1000 chars)</span>
+</label>
+<button class="text-blue-600 hover:text-blue-700 font-medium text-3xs flex items-center space-x-1">
+<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Regenerate Description</span>
+</button>
+</div>
+<textarea class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-slate-800 font-normal leading-relaxed focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none transition-all shadow-2xs" rows="2">Detailed vector illustration of a tiger head with clean sharp geometric lines, golden highlights, and dark navy contrast. Designed for versatile logo marks, branding, and modern apparel prints.</textarea>
+</div>
+<!-- Keywords / Tags Chips -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="text-[11px] font-semibold text-slate-800 flex items-center space-x-1">
+<span class="">Keywords (Tags)</span>
+<span class="text-emerald-600 font-mono font-medium text-3xs">✓ 38 / 50 keywords</span>
+</label>
+<button class="text-blue-600 hover:text-blue-700 font-medium text-3xs flex items-center space-x-1">
+<svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Regenerate Keywords</span>
+</button>
+</div>
+<!-- Tags Cloud -->
+<div class="p-2 bg-slate-50 border border-slate-200 rounded-lg flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">tiger</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">vector</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">logo</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">animal</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">wildlife</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">illustration</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">head</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">mascot</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">geometric</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">modern</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<span class="px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 text-2xs flex items-center space-x-1 shadow-2xs">
+<span class="">symbol</span>
+<button class="text-slate-400 hover:text-rose-500">✕</button>
+</span>
+<button class="px-2 py-0.5 rounded border border-dashed border-blue-400 bg-white text-blue-600 hover:bg-blue-50 text-2xs font-medium transition-colors">
+              + Add keyword
+            </button>
+</div>
+</div>
+<!-- Category & Licensing Dual Field -->
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-[11px] font-semibold text-slate-800 mb-1">Category</label>
+<div class="relative">
+<select class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 appearance-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none shadow-2xs">
+<option>Illustration</option>
+<option>Graphic Design</option>
+<option>Animals / Wildlife</option>
+</select>
+<svg class="w-3.5 h-3.5 absolute right-2.5 top-2.5 text-slate-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-semibold text-slate-800 mb-1">License</label>
+<div class="relative">
+<select class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded px-2.5 py-1.5 text-xs text-slate-800 appearance-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none shadow-2xs">
+<option>Commercial Use</option>
+<option>Editorial Only</option>
+<option>Creative Commons CC-BY</option>
+</select>
+<svg class="w-3.5 h-3.5 absolute right-2.5 top-2.5 text-slate-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+<!-- Quality & Platform Compliance Validation Card -->
+<div class="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center space-x-1.5">
+<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-[11px] font-bold tracking-wider text-slate-800 uppercase">Metadata Quality &amp; Platform Compliance</span>
+</div>
+<span class="text-3xs font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">Score: 98/100</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-2xs">
+<div class="bg-white p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<span class="text-slate-500">Title:</span>
+<span class="text-emerald-700 font-mono font-semibold flex items-center space-x-0.5"><span class="">✓PASS</span></span>
+</div>
+<div class="bg-white p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<span class="text-slate-500">Description:</span>
+<span class="text-emerald-700 font-mono font-semibold flex items-center space-x-0.5"><span class="">✓PASS</span></span>
+</div>
+<div class="bg-white p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<span class="text-slate-500">Keywords:</span>
+<span class="text-emerald-700 font-mono font-semibold">✓ 38 tags</span>
+</div>
+<div class="bg-white p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<span class="text-slate-500">Category:</span>
+<span class="text-emerald-700 font-mono font-semibold">Valid (98%)</span>
+</div>
+<div class="bg-white p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<span class="text-slate-500">Relevance:</span>
+<span class="text-blue-700 font-mono font-semibold">94%</span>
+</div>
+<div class="bg-white p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<span class="text-slate-500">Diversity:</span>
+<span class="text-emerald-700 font-mono font-semibold">✓PASS</span>
+</div>
+</div>
+<!-- Auto-optimize prompt hint -->
+<div class="mt-2 pt-2 border-t border-slate-200 flex items-center justify-between text-3xs text-slate-500">
+<span class="flex items-center space-x-1">
+<span class="text-amber-500 font-bold">⚠</span>
+<span class="">Metadata note: 2 keywords are slightly generic</span>
+</span>
+<button class="text-amber-700 hover:text-amber-800 font-semibold hover:underline font-mono">⚡ Auto-optimize</button>
+</div>
+</div>
+</div>
+<!-- Center Bottom Status Bar / Action Dock -->
+<div class="p-2.5 bg-white border-t border-slate-200 flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-2xs text-slate-600 font-medium">Metadata Status:</span>
+<span class="text-2xs text-emerald-600 font-mono font-semibold">Ready ✓</span>
+</div>
+<div class="flex items-center space-x-2">
+<button class="px-3 py-1 bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-800 rounded text-xs transition-colors">
+            Discard Changes
+          </button>
+<button class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 text-xs font-medium transition-colors">
+            Validate
+          </button>
+<button class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300 text-xs font-medium flex items-center space-x-1.5 transition-colors">
+<svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Export Manifest</span>
+</button>
+<button class="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded shadow-sm flex items-center space-x-1.5 text-xs transition-colors glow-accent">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Save Metadata</span>
+</button>
+</div>
+</div>
+</main>
+<!-- END: Center Metadata Workspace -->
+<!-- BEGIN: Right Inspector Panel -->
+<aside class="w-72 bg-white flex flex-col shrink-0 overflow-y-auto border-l border-slate-200">
+<!-- Right Inspector Tabs -->
+<div class="border-b border-slate-200 flex items-center px-2 pt-1 bg-slate-50">
+<button class="px-3 py-1.5 text-blue-600 border-b-2 border-blue-600 font-bold text-[11px]">Asset</button>
+<button class="px-3 py-1.5 text-slate-500 hover:text-slate-800 text-[11px] font-medium">Production</button>
+<button class="px-3 py-1.5 text-slate-500 hover:text-slate-800 text-[11px] font-medium">Technical</button>
+<button class="px-3 py-1.5 text-slate-500 hover:text-slate-800 text-[11px] font-medium">Lineage</button>
+</div>
+<div class="p-3 space-y-4 flex-1">
+<!-- Target Platform Section -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="text-2xs font-bold text-slate-600 uppercase tracking-wider">Target Platform</span>
+<span class="text-3xs text-blue-600 font-mono font-medium">Primary Target</span>
+</div>
+<div class="relative">
+<select class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800 appearance-none focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-medium shadow-2xs">
+<option>Adobe Stock</option>
+<option>Shutterstock</option>
+<option>Freepik</option>
+<option>Getty Images / iStock</option>
+</select>
+<svg class="w-3.5 h-3.5 absolute right-2 top-2 text-slate-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+<!-- Platform Rules Checklist -->
+<div class="rounded-lg border border-slate-200 bg-slate-50 p-2.5">
+<span class="text-3xs font-bold text-slate-600 uppercase tracking-wider block mb-2">Platform Rules Checklist</span>
+<div class="space-y-1.5 text-2xs">
+<div class="flex items-center justify-between">
+<span class="text-slate-600 flex items-center space-x-1">
+<span class="text-emerald-600 font-mono font-bold">✓</span>
+<span class="">Title length (5-200 chars)</span>
+</span>
+<span class="text-slate-700 font-mono text-3xs font-medium">58 chars</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-600 flex items-center space-x-1">
+<span class="text-emerald-600 font-mono font-bold">✓</span>
+<span class="">Description requirements</span>
+</span>
+<span class="text-emerald-600 font-mono text-3xs font-semibold">Passed</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-600 flex items-center space-x-1">
+<span class="text-emerald-600 font-mono font-bold">✓</span>
+<span class="">Keyword count (15 - 50)</span>
+</span>
+<span class="text-slate-700 font-mono text-3xs font-medium">38 tags</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-600 flex items-center space-x-1">
+<span class="text-emerald-600 font-mono font-bold">✓</span>
+<span class="">Category mapping</span>
+</span>
+<span class="text-emerald-600 font-mono text-3xs font-semibold">Mapped</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-600 flex items-center space-x-1">
+<span class="text-emerald-600 font-mono font-bold">✓</span>
+<span class="">AI disclosure declared</span>
+</span>
+<span class="text-emerald-600 font-mono text-3xs font-semibold">Compliant</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-600 flex items-center space-x-1">
+<span class="text-emerald-600 font-mono font-bold">✓</span>
+<span class="">Commercial submission</span>
+</span>
+<span class="text-emerald-600 font-mono text-3xs font-semibold">Ready</span>
+</div>
+</div>
+</div>
+<!-- Asset Details Specification Sheet -->
+<div>
+<span class="text-3xs font-bold text-slate-600 uppercase tracking-wider block mb-2">Asset Details</span>
+<div class="space-y-1.5 text-2xs divide-y divide-slate-100">
+<div class="flex items-center justify-between pt-1">
+<span class="text-slate-500">File:</span>
+<span class="text-slate-800 font-mono font-semibold">tiger_vector.svg</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-slate-500">Type:</span>
+<span class="text-blue-600 font-mono font-medium">Vector / Scalable Path</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-slate-500">Dimensions:</span>
+<span class="text-slate-800 font-mono">1024 × 1024</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-slate-500">Format:</span>
+<span class="text-slate-800 font-mono">SVG (XML)</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-slate-500">File Size:</span>
+<span class="text-slate-800 font-mono">245 KB</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-slate-500">Created:</span>
+<span class="text-slate-700 font-mono">2025-09-07 15:10</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-slate-500">Modified:</span>
+<span class="text-slate-700 font-mono">2025-09-07 15:22</span>
+</div>
+</div>
+</div>
+<!-- Production DNA Section -->
+<div>
+<span class="text-3xs font-bold text-slate-600 uppercase tracking-wider block mb-2">Production DNA</span>
+<div class="p-2 bg-slate-50 rounded border border-slate-200 space-y-1 text-3xs font-mono">
+<div class="flex justify-between">
+<span class="text-slate-500">Source:</span>
+<span class="text-slate-800 font-medium">Studio</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Model:</span>
+<span class="text-blue-600 font-semibold">Flux 1.1 Pro</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Style DNA:</span>
+<span class="text-amber-600 font-medium">Cinematic / Sharp Vector</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Seed:</span>
+<span class="text-slate-700">2847563372</span>
+</div>
+<div class="pt-1 text-slate-600 border-t border-slate-200 font-sans">
+<span class="text-slate-500 font-mono block mb-0.5">Prompt:</span>
+<p class="text-[10px] italic text-slate-700 leading-tight">
+                "A majestic geometric tiger portrait with clean lines, minimalist cybernetic motif,..."
+              </p>
+</div>
+</div>
+</div>
+<!-- Lineage Tree Section -->
+<div>
+<span class="text-3xs font-bold text-slate-600 uppercase tracking-wider block mb-2">Lineage Tree</span>
+<div class="space-y-2 relative pl-3 before:absolute before:left-1 before:top-1 before:bottom-1 before:w-0.5 before:bg-slate-200">
+<!-- Node 1 -->
+<div class="relative flex items-start space-x-2">
+<span class="w-3 h-3 rounded-full bg-white border border-slate-300 flex items-center justify-center text-3xs text-slate-600 -ml-4 mt-0.5 font-mono shadow-2xs font-semibold">1</span>
+<div>
+<span class="text-2xs font-semibold text-slate-800 block leading-tight">Studio (Text to Image)</span>
+<span class="text-3xs text-slate-500 font-mono">tiger.png</span>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="relative flex items-start space-x-2">
+<span class="w-3 h-3 rounded-full bg-white border border-slate-300 flex items-center justify-center text-3xs text-slate-600 -ml-4 mt-0.5 font-mono shadow-2xs font-semibold">2</span>
+<div>
+<span class="text-2xs font-semibold text-slate-800 block leading-tight">Vectorize (Path Tracer)</span>
+<span class="text-3xs text-slate-500 font-mono">tiger_vector.svg</span>
+</div>
+</div>
+<!-- Node 3: Current active node -->
+<div class="relative flex items-start space-x-2">
+<span class="w-3 h-3 rounded-full bg-blue-600 flex items-center justify-center text-3xs text-white -ml-4 mt-0.5 font-bold font-mono">3</span>
+<div class="bg-blue-50 border border-blue-200 p-1.5 rounded">
+<span class="text-2xs font-semibold text-blue-700 block leading-tight">Metadata Workspace</span>
+<span class="text-3xs text-emerald-600 font-mono font-medium">Ready for Stock Export</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: Right Inspector Panel -->
+</div>
+<!-- END: Main Workspace Canvas Area -->
+<!-- BEGIN: Bottom Task Center Dock -->
+<footer class="h-20 bg-white border-t border-slate-200 px-3 py-1.5 flex flex-col justify-between shrink-0 shadow-sm">
+<!-- Tasks Header -->
+<div class="flex items-center justify-between text-[11px]">
+<div class="flex items-center space-x-3">
+<span class="font-bold text-slate-800 tracking-wider flex items-center space-x-1.5">
+<svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="uppercase">Task Center</span>
+</span>
+<div class="flex items-center space-x-1 font-mono text-3xs">
+<span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">All (12)</span>
+<span class="px-1.5 py-0.2 rounded text-slate-600 hover:bg-slate-100">Generating (3)</span>
+<span class="px-1.5 py-0.2 rounded text-slate-600 hover:bg-slate-100">Upscaling (2)</span>
+<span class="px-1.5 py-0.2 rounded text-slate-600 hover:bg-slate-100">Vectorizing (2)</span>
+<span class="px-1.5 py-0.2 rounded text-slate-600 hover:bg-slate-100">Remotion (1)</span>
+<span class="px-1.5 py-0.2 rounded text-slate-600 hover:bg-slate-100">Completed (4)</span>
+<span class="px-1.5 py-0.2 rounded text-slate-600 hover:bg-slate-100">Failed (0)</span>
+</div>
+</div>
+<div class="flex items-center space-x-3 text-3xs font-mono text-slate-500">
+<span class="flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-medium text-slate-700">System Ready</span>
+</span>
+<span class="">•</span>
+<span class="">GPU: <strong class="text-slate-800">42%</strong></span>
+<span class="">•</span>
+<span class="">RAM: <strong class="text-slate-800">68%</strong></span>
+<button class="text-slate-500 hover:text-slate-800">▲</button>
+</div>
+</div>
+<!-- Active Tasks Mini-Table -->
+<div class="grid grid-cols-3 gap-3 text-3xs font-mono">
+<!-- Task 1 -->
+<div class="bg-slate-50 p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<div class="flex items-center space-x-2 truncate">
+<span class="text-slate-400">#1</span>
+<span class="text-blue-600 font-semibold flex items-center space-x-0.5"><span class="">✨</span><span class="">Text to Image</span></span>
+<span class="text-slate-700 truncate font-medium">mountain_lake_01.png</span>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<div class="w-16 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full" style="width: 78%"></div>
+</div>
+<span class="text-blue-600 font-bold">78%</span>
+</div>
+</div>
+<!-- Task 2 -->
+<div class="bg-slate-50 p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<div class="flex items-center space-x-2 truncate">
+<span class="text-slate-400">#2</span>
+<span class="text-indigo-600 font-semibold flex items-center space-x-0.5"><span class="">⤢</span><span class="">Upscale</span></span>
+<span class="text-slate-700 truncate font-medium">city_skyline_01.png</span>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<div class="w-16 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-indigo-600 h-full rounded-full" style="width: 45%"></div>
+</div>
+<span class="text-indigo-600 font-bold">45%</span>
+</div>
+</div>
+<!-- Task 3 -->
+<div class="bg-slate-50 p-1.5 rounded border border-slate-200 flex items-center justify-between shadow-2xs">
+<div class="flex items-center space-x-2 truncate">
+<span class="text-slate-400">#3</span>
+<span class="text-emerald-600 font-semibold flex items-center space-x-0.5"><span class="">⌖</span><span class="">Vectorize</span></span>
+<span class="text-slate-700 truncate font-medium">tiger_portrait_01.png</span>
+</div>
+<div class="flex items-center space-x-2 shrink-0">
+<div class="w-16 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full rounded-full" style="width: 100%"></div>
+</div>
+<span class="text-emerald-600 font-bold">100%</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: Bottom Task Center Dock -->
+</body></html>

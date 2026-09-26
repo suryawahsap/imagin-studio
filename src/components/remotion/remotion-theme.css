@@ -1,0 +1,27 @@
+.remotion-theme {
+  --bg-void: #0c0e14;
+  --bg-base: #0c0e14;
+  --bg-panel: #111319;
+  --bg-elevated: #141720;
+  --bg-element: #141720;
+  --bg-hover: #1f2330;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-structural: #1f2330;
+  --border-strong: #262b3a;
+}
+
+[data-theme="light"] .remotion-theme {
+  --bg-void: #f1f5f9;
+  --bg-base: #f1f5f9;
+  --bg-panel: #ffffff;
+  --bg-elevated: #f8fafc;
+  --bg-element: #f8fafc;
+  --bg-hover: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-structural: #e2e8f0;
+  --border-strong: #cbd5e1;
+}

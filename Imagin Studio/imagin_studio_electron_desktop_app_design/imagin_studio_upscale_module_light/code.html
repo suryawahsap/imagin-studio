@@ -1,0 +1,537 @@
+<!DOCTYPE html><html class="h-full bg-[#f8fafc] text-slate-800 antialiased select-none" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>IMAGIN STUDIO - Upscale</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Font Awesome Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#f8fafc',
+              panel: '#ffffff',
+              card: '#f1f5f9',
+              border: '#e2e8f0',
+              borderLight: '#cbd5e1',
+              accent: '#2563eb',
+              accentHover: '#1d4ed8',
+              cyan: '#0284c7',
+              emerald: '#059669'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+<style data-purpose="custom-scrollbars">
+    /* Custom refined scrollbars for professional IDE look in light mode */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+<style data-purpose="split-slider-rendering">
+    /* Pixelated rendering for the BEFORE side to realistically mimic low-res 1K zoomed */
+    .pixelated-canvas {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      filter: blur(0.4px) contrast(0.96);
+    }
+    .smooth-canvas {
+      image-rendering: auto;
+      filter: contrast(1.08) sharpness(1.2);
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col font-sans bg-[#f8fafc] text-slate-800">
+<!-- BEGIN: ApplicationWindowFrame / Header -->
+
+<!-- END: ApplicationWindowFrame / Header -->
+<!-- BEGIN: MainStudioWorkspace -->
+<div class="flex-1 flex overflow-hidden">
+<!-- BEGIN: WorkflowLeftSidebar -->
+<aside class="w-[285px] bg-white border-r border-slate-200 flex flex-col shrink-0" data-purpose="workflow-sidebar">
+<!-- Workflow Header -->
+<div class="h-11 px-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/60">
+<div class="flex items-center space-x-2 text-xs font-bold tracking-wider text-slate-900 uppercase">
+<i class="fa-solid fa-sliders text-blue-600"></i>
+<span class="">WORKFLOW</span>
+</div>
+<span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+          v4.2 PRO
+        </span>
+</div>
+<!-- Config Form Content -->
+<div class="flex-1 p-3.5 space-y-4 overflow-y-auto">
+<!-- Step 1: Source Selection -->
+<section class="space-y-1.5">
+<div class="flex items-center justify-between text-xs">
+<label class="font-semibold text-slate-800 flex items-center gap-1.5">
+<span class="w-4 h-4 rounded-full bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center text-[10px] font-bold">1</span>
+<span class="">Source</span>
+</label>
+<button class="text-[11px] text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+<i class="fa-solid fa-folder-open text-[10px]"></i>
+<span class="">Library</span>
+</button>
+</div>
+<!-- Dropzone Container -->
+<div class="border border-dashed border-slate-300 hover:border-blue-500 bg-slate-50/70 hover:bg-blue-50/30 rounded-lg p-3 text-center transition cursor-pointer group">
+<div class="w-9 h-9 mx-auto mb-2 rounded-full bg-white shadow-xs border border-slate-200 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:border-blue-200 transition">
+<i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+</div>
+<p class="text-xs font-medium text-slate-800">Drop file here or click to upload</p>
+<p class="text-[10px] text-slate-500 mt-1">Supported: JPG, PNG, WEBP • Max 32MB</p>
+</div>
+</section>
+<!-- Step 2: Resolution Selection -->
+<section class="space-y-2">
+<label class="font-semibold text-slate-800 flex items-center gap-1.5 text-xs">
+<span class="w-4 h-4 rounded-full bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center text-[10px] font-bold">2</span>
+<span class="">Resolution</span>
+</label>
+<div class="relative">
+<select class="w-full bg-white border border-slate-200 text-slate-800 text-xs rounded-md px-2.5 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+<option>4K (3840 × 2160)</option>
+<option>2K (2560 × 1440)</option>
+<option>8K (7680 × 4320)</option>
+<option>Custom Resolution</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+<i class="fa-solid fa-chevron-down text-[10px]"></i>
+</div>
+</div>
+<!-- Toggle enhance details -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-col">
+<span class="text-xs text-slate-800 font-medium">Enhance Details</span>
+<span class="text-[10px] text-slate-500">Neural micro-textures &amp; skin/fur</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-200 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
+</label>
+</div>
+</section>
+<!-- Step 3: AI Model Config -->
+<section class="space-y-2">
+<div class="flex items-center justify-between">
+<label class="font-semibold text-slate-800 flex items-center gap-1.5 text-xs">
+<span class="w-4 h-4 rounded-full bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center text-[10px] font-bold">3</span>
+<span class="">AI Model</span>
+</label>
+<span class="text-[10px] text-blue-600 font-mono font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+              v4.2 Engine
+            </span>
+</div>
+<div class="relative">
+<select class="w-full bg-white border border-slate-200 text-slate-800 text-xs rounded-md px-2.5 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+<option>Standard (Balanced)</option>
+<option>Ultra Clarity (Photorealistic)</option>
+<option>Anime &amp; CGI Vector</option>
+<option>Faithful Restoration</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+<i class="fa-solid fa-chevron-down text-[10px]"></i>
+</div>
+</div>
+<!-- Fine-tune controls -->
+<div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-md border border-slate-200 text-[11px]">
+<div>
+<span class="text-slate-500 text-[10px] block">Denoise</span>
+<span class="text-slate-800 font-mono font-medium">0.12 (Low)</span>
+</div>
+<div>
+<span class="text-slate-500 text-[10px] block">Face Restore</span>
+<span class="text-blue-600 font-mono font-medium">GFPGAN v1.4</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Action Button Dock -->
+<div class="p-3.5 border-t border-slate-200 bg-slate-50/50">
+<button class="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs tracking-wide shadow-md shadow-blue-600/20 flex items-center justify-center space-x-2 active:scale-[0.99] transition">
+<i class="fa-solid fa-bolt text-yellow-300"></i>
+<span class="">Upscale (4X Render)</span>
+</button>
+</div>
+</aside>
+<!-- END: WorkflowLeftSidebar -->
+<!-- BEGIN: CentralComparisonWorkspace -->
+<main class="flex-1 flex flex-col bg-slate-100/70 overflow-hidden" data-purpose="canvas-workspace">
+<!-- Workspace Toolbar -->
+<div class="h-11 border-b border-slate-200 px-4 flex items-center justify-between bg-white" data-purpose="canvas-toolbar">
+<!-- Zoom & Scale Controls -->
+<div class="flex items-center space-x-2 text-xs">
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition" title="Zoom Out">
+<i class="fa-solid fa-magnifying-glass-minus"></i>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition" title="Zoom In">
+<i class="fa-solid fa-magnifying-glass-plus"></i>
+</button>
+<span class="text-[11px] font-mono font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+            100% (Native 4K)
+          </span>
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition" title="Fit to Screen">
+<i class="fa-regular fa-square"></i>
+</button>
+</div>
+<!-- View Modes (Split Slider vs Side-by-Side) -->
+<div class="flex items-center bg-slate-100 p-0.5 rounded-md border border-slate-200">
+<button class="px-2.5 py-1 text-xs font-medium text-slate-900 bg-white rounded shadow-xs flex items-center gap-1.5 border border-slate-200/60">
+<i class="fa-solid fa-table-columns text-[10px] text-blue-600"></i>
+<span class="">Split Slider</span>
+</button>
+<button class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 rounded flex items-center gap-1.5 transition">
+<i class="fa-regular fa-clone text-[10px]"></i>
+<span class="">Side-by-Side</span>
+</button>
+</div>
+<!-- Right Canvas Tools -->
+<div class="flex items-center space-x-2 text-slate-500 text-xs">
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-100 hover:text-slate-800 transition" title="Rotate/Reset">
+<i class="fa-solid fa-arrow-rotate-right"></i>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded hover:bg-slate-100 hover:text-slate-800 transition" title="Fullscreen Canvas">
+<i class="fa-solid fa-expand"></i>
+</button>
+</div>
+</div>
+<!-- Main Canvas Viewport with Interactive Split Slider -->
+<div class="flex-1 relative overflow-hidden bg-slate-100 flex items-center justify-center p-3 select-none" data-purpose="viewport-area" id="viewport-container">
+<!-- Image Container Frame -->
+<div class="relative w-full max-w-[820px] aspect-square max-h-[580px] rounded-lg border border-slate-300 overflow-hidden shadow-xl bg-white" id="comparison-box">
+<!-- Layer 1: AFTER Image (Ultra High Resolution 4K) -->
+<div class="absolute inset-0 w-full h-full overflow-hidden">
+<img alt="4K Upscaled Tiger Portrait" class="w-full h-full object-cover object-center smooth-canvas scale-[1.01]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRveqagirYVgKCvEoyBZYCWFzAcCCxb9NeLeTuIyS6PZZfDblWbbOc4SylVQtsnEGeU6k2DES3YQjWkOnQptlhtFSat-pwZmVABTpJQ3NR1fWOqL3FKIVws857xAEmarrphKMDSB6RLmjfqDsp8IhIbqF1IoFOR6ryAWImGExwUJhkuSYq337wZp7kp3ySyl3aToXoG-o-aeOO51aq2oSDDNLouPp-L0rvHWF8Dzj_SHR8NGixalzOURRVwkkV2_cJag">
+<!-- AFTER Badge -->
+<div class="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-full bg-white/85 backdrop-blur-md border border-blue-200 text-[11px] font-semibold text-blue-700 flex items-center gap-1.5 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 shadow-sm shadow-blue-500/50"></span>
+              AFTER (4K AI)
+            </div>
+</div>
+<!-- Layer 2: BEFORE Image (Simulated 1K Lower Res Crop, masked by slider width) -->
+<div class="absolute inset-y-0 left-0 overflow-hidden border-r-2 border-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.35)]" id="before-slider-container" style="width: 50%;">
+<!-- We display the exact same image styled with pixelated low-res effect -->
+<div class="w-[820px] max-w-none h-full relative" id="before-inner-wrapper" style="width: 699px; height: 578px;">
+<img alt="1K Original Tiger Portrait" class="w-full h-full object-cover object-center pixelated-canvas filter contrast-[0.95]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhI4Fkez-cKHgNCg2X5gFYOFjQAlyMvjlgvJTLOsu7nXwtHx0uyxtCSbqthbQfxTgZrVX58BhjqNCdfcu2_1fWT21fEW65Kml-KgXl419z_rg8SN9CuORzCPDZUDax8UdDpR6QOzcPUVXxdpn7yjP_c2hZnQB1x90U3cTLVJyr2OEHgjhXmCzl7dUqoUzZPPY3ny88VA8SrG8Glwx1aCvaJmmnh5owjDmMQMTWsedzvl_nWKhgJvUSNAZIZkX37QwfCg">
+</div>
+<!-- BEFORE Badge -->
+<div class="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-full bg-white/85 backdrop-blur-md border border-slate-300 text-[11px] font-semibold text-slate-700 flex items-center gap-1.5 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+              BEFORE (1K)
+            </div>
+</div>
+<!-- Interactive Center Divider Handle -->
+<div class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 cursor-ew-resize flex items-center justify-center pointer-events-none" id="slider-handle" style="left: 50%;">
+<div class="w-8 h-8 rounded-full bg-white border-2 border-blue-600 text-blue-600 shadow-lg shadow-blue-500/20 flex items-center justify-center text-xs">
+<i class="fa-solid fa-ellipsis-vertical"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Filmstrip Asset Carousel -->
+<div class="h-16 border-t border-slate-200 bg-white flex items-center px-4 justify-between shrink-0" data-purpose="bottom-filmstrip">
+<button class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+<i class="fa-solid fa-chevron-left text-xs"></i>
+</button>
+<div class="flex items-center space-x-3 overflow-x-auto py-1 px-2">
+<!-- Active Tiger Thumb -->
+<div class="relative w-12 h-12 rounded border-2 border-blue-600 overflow-hidden cursor-pointer shadow-sm group ring-2 ring-blue-100">
+<img alt="Tiger 4K" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB29cWTzuuhLXLTNS3Xp5KZw_QyCtUZ_919TDak1MLjlbGJn0lEYv_vww_sYNkHnDd5XjTNER8b0vn-NO7xo_gNC5zDwPoCrCSaZ8Mo-eeNUkFa68odFQrAjhy-vz-3pp2gVtSByBSN53xnVGDx_AZISwgzbgprIYiM0pCQFI3rqUF47qPBXUasMBufmlGFsd_OiqE4JfB5_SQknOUdbw0DB-Il76f2Ny9PTltsWxgogc-cLk1ZHJtKqfm6BI1tUtn6Vw">
+<span class="absolute bottom-0.5 right-0.5 text-[8px] font-mono font-bold bg-white/90 px-1 rounded text-blue-600 shadow-xs">4K</span>
+</div>
+<!-- Secondary Thumb: Lion -->
+<div class="relative w-12 h-12 rounded border border-slate-200 hover:border-slate-400 overflow-hidden cursor-pointer opacity-75 hover:opacity-100 transition">
+<img alt="Lion" class="w-full h-full object-cover filter hue-rotate-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdpNMzmWiGeM8lL_NJsN-DDTEcLC0FvOa5UWJweDPOb6_dEGog8LcfzMFNYHqILsA9ZvVLKwhquQSDs7zVnA47qwhDxFjE7yjF9syEJMS7XoirAWA7hRnw3dkxCmPuo878F555w-YJB0OtDS9KUWRNjjS2ufbc0h6NrCBRMTA_A7oYGx1CO2MjLe7W-GFUAM0rZLBxhOmSy-vTU8wBicp7YGCZv5CV1xMW6qM5E1SCPoKeYkLIE1G8tmU0BdNuUroH1Q">
+<span class="absolute bottom-0.5 right-0.5 text-[8px] font-mono bg-white/90 px-1 rounded text-slate-700">2K</span>
+</div>
+<!-- Secondary Thumb: Eagle -->
+<div class="relative w-12 h-12 rounded border border-slate-200 hover:border-slate-400 overflow-hidden cursor-pointer opacity-75 hover:opacity-100 transition">
+<img alt="Landscape" class="w-full h-full object-cover filter contrast-125 saturate-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATEjU7_HybPCK8a47zjFBdbzsaRLxURrrkbdSG7Sr3Fwfa1V49F5_yXWc_10Y-baG0WKBAokDOzc_Alnwpsxf2XAr8hsPtLVZ5r_wuCVmg7iXc-M2KPs9-LSlOSJnWICLl8L1r0cXVF70l14yWYyXDzymQhTFuk1UNuDg4sgsXdGmsTqSbDrNGKX2QoCWuRmsWmaVjJe5enqNUwVrIaQtMz7wwPBE3Pe5CQgLSmgrM3bH3NDAVdINaCYQlLJvWxao_7g">
+<span class="absolute bottom-0.5 right-0.5 text-[8px] font-mono bg-white/90 px-1 rounded text-slate-700">4K</span>
+</div>
+<!-- Secondary Thumb: City -->
+<div class="relative w-12 h-12 rounded border border-slate-200 hover:border-slate-400 overflow-hidden cursor-pointer opacity-75 hover:opacity-100 transition">
+<img alt="Architecture" class="w-full h-full object-cover filter invert-[0.15] sepia-[0.3]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOLkR-PZdbB7BIRJ4NQtOiLaTGgM9KQY5poZnx-MwRSZ_4GUoYrr71bWZDCPcNxkGHdS6hbmhxkiD7UheWytsELsbykrL6DBCpj3ukD0jsEbw4MhZoasjOPYaOT1Jv0p8CMsPKCcWwlQbmxquNMRyRPKktPELAQ9-V4OEND7-LcBCJ9d9SoeKvnQNC6HN3QnTH_u-OAl0RotUmubcAS3cUNPNi0nAuEM-BNYc1DZjWTistSAIHFLMcek9t1Pq_TdJF1w">
+<span class="absolute bottom-0.5 right-0.5 text-[8px] font-mono bg-white/90 px-1 rounded text-slate-700">1K</span>
+</div>
+<!-- Secondary Thumb: Cathedral -->
+<div class="relative w-12 h-12 rounded border border-slate-200 hover:border-slate-400 overflow-hidden cursor-pointer opacity-75 hover:opacity-100 transition">
+<img alt="Cathedral" class="w-full h-full object-cover filter brightness-75" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAogW0RqLF3XlcS5fGIU6soshmZCTyp2YK7UuaKn4fMl60k11VRE8V7XA3pFIhiYRmiCoNq1KnoiYR67zhEjZKydMRYEM7098cim0q4eCiFBHBoab3P6eLy46Lt2lfR7G4I9gmgmiTMD_q4qGsQUL8w19ArrK6GFiT5QFlK3dYXl5HlSjGQiZOBHH__3dSjPP3GJ9HE3iWwY7VxRJYquyvP6jkGiv8zPilsOAaLT0PXqBnsmqnX3VF4SH-Sj5_Ps-2TA">
+<span class="absolute bottom-0.5 right-0.5 text-[8px] font-mono bg-white/90 px-1 rounded text-slate-700">8K</span>
+</div>
+</div>
+<button class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+<i class="fa-solid fa-chevron-right text-xs"></i>
+</button>
+</div>
+</main>
+<!-- END: CentralComparisonWorkspace -->
+<!-- BEGIN: RightInspectorSidebar -->
+<aside class="w-[270px] bg-white border-l border-slate-200 flex flex-col shrink-0" data-purpose="inspector-sidebar">
+<!-- Inspector Tabs -->
+<div class="h-11 px-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/60">
+<span class="text-xs font-bold tracking-wider text-slate-900 uppercase">INSPECTOR</span>
+<div class="flex items-center bg-slate-100 p-0.5 rounded border border-slate-200 text-[11px]">
+<button class="px-2 py-0.5 bg-blue-600 text-white rounded font-medium shadow-xs">Image</button>
+<button class="px-2 py-0.5 text-slate-600 hover:text-slate-900">Metadata</button>
+</div>
+</div>
+<!-- File Summary Card -->
+<div class="p-3.5 space-y-4 flex-1 overflow-y-auto">
+<!-- Active File Info -->
+<div class="flex items-center space-x-3 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<img alt="Thumb" class="w-10 h-10 rounded object-cover border border-slate-200 shadow-xs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlH7NZO7KjNfkseyuJeS0UfBDfRSOxr3VAYoIt2yMZ5z1VunKeI3vNfyBgGHSVscbU2x2t_CYywJ8W2o20CXkvsqQjZmwZjYBVNwdDbSJbVPV4F23qwQHkWYX5Vk6klox5Mvj9AjBb1lw23qL4kgqI0zJX5QujpiIElsVTT1x4vNBdSj4X1XtMohP8g58UYnXJ6DGTm40H504lJ5Fg-nNDGGSiIP3uXjdmU25MYyGMzmzbXDFU_ut1wrskJs-C85jEgg">
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-semibold text-slate-900 truncate">tiger_4k.jpg</span>
+<span class="text-[10px] text-blue-600 font-mono font-medium">3840 × 3840 • PNG</span>
+</div>
+</div>
+<!-- Specifications Table -->
+<div class="space-y-2 text-xs">
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">Original</span>
+<span class="font-mono text-slate-800">1024 × 1024</span>
+</div>
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">Upscaled</span>
+<span class="font-mono font-semibold text-blue-600">3840 × 3840 (4K)</span>
+</div>
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">AI Model</span>
+<span class="text-slate-800">Standard</span>
+</div>
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">Enhancement</span>
+<span class="text-slate-800 text-right">Details + Sharpness</span>
+</div>
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">File Size</span>
+<span class="font-mono text-slate-800">
+<span class="line-through text-slate-400 text-[10px] mr-1">2.4 MB</span> 16.7 MB
+            </span>
+</div>
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">Created</span>
+<span class="font-mono text-slate-500 text-[11px]">2025-09-07 14:30</span>
+</div>
+</div>
+<!-- Performance / Telemetry Panel -->
+<div class="bg-slate-50 rounded-lg p-2.5 border border-slate-200 space-y-1.5">
+<div class="text-[10px] font-semibold text-slate-600 tracking-wide uppercase flex items-center justify-between">
+<span class="">Processing Telemetry</span>
+<i class="fa-solid fa-chart-line text-blue-600"></i>
+</div>
+<div class="flex justify-between text-xs pt-1">
+<span class="text-slate-500">Inference Time:</span>
+<span class="font-mono text-blue-600 font-semibold">1.84s (TensorRT)</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-slate-500">VRAM Allocation:</span>
+<span class="font-mono text-slate-700">5.2 GB / 24 GB</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons Footer -->
+<div class="p-3.5 border-t border-slate-200 bg-slate-50/50 space-y-2">
+<button class="w-full py-2 px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center justify-center space-x-2 transition shadow-sm shadow-blue-600/30">
+<i class="fa-solid fa-download"></i>
+<span class="">Download (16.7 MB)</span>
+</button>
+<button class="w-full py-2 px-3 rounded-md bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 font-medium text-xs flex items-center justify-center space-x-2 transition shadow-2xs">
+<i class="fa-regular fa-folder-open"></i>
+<span class="">Open Folder</span>
+</button>
+</div>
+</aside>
+<!-- END: RightInspectorSidebar -->
+</div>
+<!-- END: MainStudioWorkspace -->
+<!-- BEGIN: BottomTaskCenterDock -->
+<footer class="h-28 bg-white border-t border-slate-200 flex flex-col shrink-0 text-xs" data-purpose="task-center-dock">
+<!-- Dock Titlebar & Filters -->
+<div class="h-8 border-b border-slate-200 px-4 flex items-center justify-between text-[11px] bg-slate-50">
+<div class="flex items-center space-x-3">
+<span class="font-bold text-slate-900 flex items-center gap-1.5 uppercase tracking-wider">
+<i class="fa-solid fa-layer-group text-blue-600"></i>
+          TASK CENTER
+        </span>
+<span class="text-slate-300">|</span>
+<!-- Filter Pills -->
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 border border-blue-200 cursor-pointer font-semibold">All (12)</span>
+<span class="text-slate-500 hover:text-slate-800 cursor-pointer font-medium">Generating (3)</span>
+<span class="text-slate-500 hover:text-slate-800 cursor-pointer font-medium">Upscaling (2)</span>
+<span class="text-slate-500 hover:text-slate-800 cursor-pointer font-medium">Vectorizing (2)</span>
+<span class="text-slate-500 hover:text-slate-800 cursor-pointer font-medium">Remotion (1)</span>
+<span class="text-slate-500 hover:text-slate-800 cursor-pointer font-medium">Completed (4)</span>
+<span class="text-slate-500 hover:text-slate-800 cursor-pointer font-medium">Failed (0)</span>
+</div>
+</div>
+<!-- Telemetry Status Bar Right -->
+<div class="flex items-center space-x-4 font-mono text-[10px] text-slate-600">
+<span class="flex items-center gap-1.5 text-blue-600 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+          System Ready
+        </span>
+<span class="">GPU: 42%</span>
+<span class="">RAM: 68%</span>
+<button class="hover:text-slate-800 text-slate-400">
+<i class="fa-solid fa-table-cells-large"></i>
+</button>
+<button class="hover:text-slate-800 text-slate-400">
+<i class="fa-solid fa-chevron-down"></i>
+</button>
+</div>
+</div>
+<!-- Active Tasks List -->
+<div class="flex-1 overflow-y-auto divide-y divide-slate-100 text-[11px] font-mono bg-white">
+<!-- Task Row 1: Generating -->
+<div class="h-6 px-4 flex items-center justify-between hover:bg-slate-50 transition">
+<div class="flex items-center space-x-3 w-1/4">
+<span class="text-slate-400">#1</span>
+<i class="fa-regular fa-image text-slate-500"></i>
+<span class="text-slate-800 font-sans font-medium">Text to Image</span>
+</div>
+<div class="text-slate-500 truncate w-1/4">mountain_lake_01.png</div>
+<div class="w-1/4 flex items-center space-x-2">
+<div class="w-28 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+<div class="bg-blue-600 h-full rounded-full" style="width: 78%"></div>
+</div>
+<span class="text-slate-600 text-[10px] font-semibold">78%</span>
+<span class="inline-flex items-center px-1.5 rounded text-[9px] bg-blue-50 text-blue-700 border border-blue-200">
+            • Generating
+          </span>
+</div>
+<div class="text-slate-400 text-[10px] flex items-center space-x-3">
+<span class="">2025-06-07 14:32</span>
+<button class="hover:text-slate-700"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+</div>
+</div>
+<!-- Task Row 2: Upscaling -->
+<div class="h-6 px-4 flex items-center justify-between hover:bg-slate-50 transition">
+<div class="flex items-center space-x-3 w-1/4">
+<span class="text-slate-400">#2</span>
+<i class="fa-solid fa-expand text-blue-600"></i>
+<span class="text-slate-800 font-sans font-medium">Upscale</span>
+</div>
+<div class="text-slate-500 truncate w-1/4">city_skyline_01.png</div>
+<div class="w-1/4 flex items-center space-x-2">
+<div class="w-28 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+<div class="bg-blue-500 h-full rounded-full" style="width: 45%"></div>
+</div>
+<span class="text-slate-600 text-[10px] font-semibold">45%</span>
+<span class="inline-flex items-center px-1.5 rounded text-[9px] bg-sky-50 text-sky-700 border border-sky-200">
+            • Upscaling
+          </span>
+</div>
+<div class="text-slate-400 text-[10px] flex items-center space-x-3">
+<span class="">2025-06-07 14:28</span>
+<button class="hover:text-slate-700"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+</div>
+</div>
+<!-- Task Row 3: Completed -->
+<div class="h-6 px-4 flex items-center justify-between hover:bg-slate-50 transition">
+<div class="flex items-center space-x-3 w-1/4">
+<span class="text-slate-400">#3</span>
+<i class="fa-solid fa-bezier-curve text-emerald-600"></i>
+<span class="text-slate-800 font-sans font-medium">Vectorize</span>
+</div>
+<div class="text-slate-500 truncate w-1/4">tiger_portrait_01.png</div>
+<div class="w-1/4 flex items-center space-x-2">
+<div class="w-28 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+<div class="bg-emerald-500 h-full rounded-full" style="width: 100%"></div>
+</div>
+<span class="text-slate-600 text-[10px] font-semibold">100%</span>
+<span class="inline-flex items-center px-1.5 rounded text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+            • Completed
+          </span>
+</div>
+<div class="text-slate-400 text-[10px] flex items-center space-x-3">
+<span class="">2025-06-07 13:50</span>
+<button class="hover:text-slate-700"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: BottomTaskCenterDock -->
+<!-- BEGIN: InteractiveSliderScript -->
+<script data-purpose="interactive-split-slider">
+    document.addEventListener('DOMContentLoaded', () => {
+      const box = document.getElementById('comparison-box');
+      const sliderContainer = document.getElementById('before-slider-container');
+      const sliderHandle = document.getElementById('slider-handle');
+      const innerWrapper = document.getElementById('before-inner-wrapper');
+
+      // Keep the inner wrapper strictly identical in size to comparison box
+      function syncDimensions() {
+        if (box && innerWrapper) {
+          innerWrapper.style.width = box.clientWidth + 'px';
+          innerWrapper.style.height = box.clientHeight + 'px';
+        }
+      }
+
+      window.addEventListener('resize', syncDimensions);
+      syncDimensions();
+
+      let isDragging = false;
+
+      function updateSliderPosition(clientX) {
+        const rect = box.getBoundingClientRect();
+        let posX = clientX - rect.left;
+        if (posX < 0) posX = 0;
+        if (posX > rect.width) posX = rect.width;
+
+        const percentage = (posX / rect.width) * 100;
+        sliderContainer.style.width = `${percentage}%`;
+        sliderHandle.style.left = `${percentage}%`;
+      }
+
+      box.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        updateSliderPosition(e.clientX);
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        updateSliderPosition(e.clientX);
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // Touch screen support
+      box.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          updateSliderPosition(e.touches[0].clientX);
+        }
+      });
+    });
+  </script>
+<!-- END: InteractiveSliderScript -->
+
+
+</body></html>

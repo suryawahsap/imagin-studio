@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800;900&family=Spline+Sans+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+/*
+ * imagin_studio_canvas.tsx adalah monolit legacy 30k baris (frozen reference,
+ * dirujuk pipeline/workflow.md). Jangan di-scan Tailwind: kelas palet lamanya
+ * akan bocor ke bundle dan menutupi token kita.
+ */
+@source not "../imagin_studio_canvas.tsx";
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * IMAGIN STUDIO — token dari design reference
+ *   dark  : "Imagin Studio/.../pro_creative_studio/DESIGN.md"  (obsidian + cobalt)
+ *   light : "Imagin Studio/.../studio_lucid/DESIGN.md"         (slate + royal blue)
+ * Skala permukaan memakai hex mockup apa adanya supaya fidelity-nya terjaga;
+ * markup cukup memakai var(--s-*) sehingga satu markup jalan di dua tema.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+:root {
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
+
+  --s-canvas: #07090e; --s-header: #0c0e14; --s-sidebar: #12151f;
+  --s-dock: #0c0e14; --s-dock-bar: #12151f; --s-card-hero: #181c2b;
+  --s-card-gallery: #12151f; --s-card-asset: #181c2b; --s-field: #0c0e14;
+  --s-control: #181c2b; --s-nav-capsule: #12151f;
+  --s-nav-active: #1f2438; --s-segmented-well: #12151f; --s-segmented-active: #1f2438;
+  --s-table-head: #0c0e14; --s-scrollbar-track: #0c0e14; --s-scrollbar-thumb: #373940;
+  --s-scrollbar-thumb-hover: #373940;
+  --t-primary: #f1f5f9; --t-body: #cbd5e1; --t-secondary: #94a3b8;
+  --t-muted: #64748b; --t-heading: #e2e8f0;
+  --accent: #3b82f6; --accent-hover: #2563eb; --accent-fill: #2563eb;
+  --gradient-start: #4f46e5; --gradient-mid: #3b82f6; --gradient-end: #06b6d4;
+  --module-studio: #3b82f6; --module-upscale: #06b6d4; --module-vectorize: #a855f7;
+  --module-remotion: #f472b6; --module-metadata: #6366f1; --module-gallery: #10b981;
+  --status-success: #10b981; --status-success-text: #34d399; --status-processing: #3b82f6;
+  --border-default: #1e2333; --border-subtle: #151926;
+  --border-strong: #424754;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / .05);
+  --shadow-md: 0 1px 3px 0 rgb(0 0 0 / .10), 0 1px 2px -1px rgb(0 0 0 / .10);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .10), 0 4px 6px -4px rgb(0 0 0 / .10);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / .25);
+  --shadow-selected: 0 10px 15px -3px rgb(59 130 246 / .20), 0 4px 6px -4px rgb(59 130 246 / .20);
+  --shadow-focus: 0 0 0 2px rgb(59 130 246 / .45);
+  --space-0-5: 2px; --space-1: 4px; --space-1-5: 6px; --space-2: 8px;
+  --space-2-5: 10px; --space-3: 12px; --space-3-5: 14px; --space-4: 16px;
+  --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px; --radius-full: 9999px;
+  --text-9: 9px; --text-10: 10px; --text-11: 11px; --text-xs: 12px;
+  --leading-tight: 1.25; --leading-normal: 1.5; --leading-relaxed: 1.625;
+  --transition-fast: 150ms cubic-bezier(.4, 0, .2, 1); --transition-normal: 300ms cubic-bezier(.4, 0, .2, 1);
+
+  /* Legacy aliases retained for unported screens. */
+  --s-void: var(--s-canvas); --s-base: var(--s-canvas); --s-bar: var(--s-header);
+  --s-card: var(--s-card-hero); --s-elev: var(--s-card-asset); --s-input: var(--s-field);
+  --s-hover: var(--s-segmented-active); --s-track: var(--s-scrollbar-track); --s-logo: var(--s-nav-active);
+  --s-nav: var(--s-nav-capsule); --s-dock-head: var(--s-dock); --s-border: var(--border-default);
+  --s-border-soft: var(--border-subtle); --s-border-strong: var(--border-strong);
+  --s-text: var(--t-primary); --s-text-2: var(--t-body); --s-text-muted: var(--t-muted); --s-text-faint: var(--t-muted);
+  --s-accent: var(--accent); --s-accent-hover: var(--accent-hover); --s-accent-hi: var(--accent); --s-accent-text: var(--accent);
+  --s-neon: var(--module-metadata); --s-pink: var(--module-remotion); --s-cyan: var(--module-upscale);
+  --s-success: var(--status-success); --s-warn: #f59e0b; --s-error: #ef4444;
+  --s-radius: var(--radius-md); --s-radius-lg: var(--radius-lg); --s-radius-xl: var(--radius-xl);
+
+  /* ── Legacy/canonical aliases (dipakai halaman yang belum di-port) ── */
+  --bg-void: var(--s-void);
+  --bg-base: var(--s-base);
+  --bg-panel: var(--s-card);
+  --bg-elevated: var(--s-elev);
+  --bg-element: var(--s-input);
+  --bg-hover: var(--s-hover);
+  --bg-page: var(--s-base);
+  --bg-card: var(--s-card);
+  --text-primary: var(--s-text);
+  --text-secondary: var(--s-text-2);
+  --text-muted: var(--s-text-muted);
+  --text-on-vivid: #ffffff;
+  --border-subtle: var(--s-border);
+  --border-structural: var(--border-default);
+  --border-strong: var(--s-border-strong);
+  --border-color: var(--s-border);
+  --accent-action: var(--s-accent);
+  --accent-indicator: var(--s-accent);
+  --accent-action-soft: color-mix(in srgb, var(--accent) 10%, transparent);
+  --accent-info: var(--s-cyan);
+  --accent-telemetry-dark: var(--s-cyan);
+  --accent-cyan: var(--s-cyan);
+  --accent-cyan-solid: var(--module-upscale);
+  --accent-blue: var(--s-accent);
+  --accent-blue-solid: var(--s-accent);
+  --accent-indigo: var(--s-neon);
+  --accent-indigo-solid: var(--s-neon);
+  --accent-cobalt: var(--s-accent);
+  --accent-cobalt-solid: var(--s-accent);
+  --accent-success: var(--s-success);
+  --accent-success-solid: var(--s-success);
+  --accent-green: var(--s-success);
+  --accent-green-solid: var(--s-success);
+  --accent-warning: var(--s-warn);
+  --accent-warning-solid: var(--s-warn);
+  --accent-error: var(--s-error);
+  --accent-error-solid: var(--s-error);
+  --accent-red: var(--s-error);
+  --accent-red-solid: var(--s-error);
+  --accent-gold: var(--s-warn);
+  --accent-gold-solid: var(--s-warn);
+  --accent-rose: var(--s-error);
+  --accent-rose-solid: var(--s-error);
+
+  --module-studio-vivid: var(--module-studio); --module-studio-text: var(--t-primary);
+  --module-upscale-vivid: var(--module-upscale); --module-upscale-text: var(--t-primary);
+  --module-vectorize-vivid: var(--module-vectorize); --module-vectorize-text: var(--t-primary);
+  --module-animation: var(--module-remotion); --module-animation-vivid: var(--module-remotion); --module-animation-text: var(--t-primary);
+  --module-library: var(--module-gallery); --module-library-vivid: var(--module-gallery); --module-library-text: var(--t-primary);
+
+  --status-ready-text: var(--s-success);
+  --status-queued-text: var(--s-text-muted);
+  --status-processing-text: var(--s-cyan);
+  --status-failed-text: var(--s-error);
+  --status-cancelled-text: var(--s-text-muted);
+  --status-pending-text: var(--s-warn);
+
+  --mod-st-base: var(--module-studio);
+  --mod-st-text: var(--module-studio-text);
+  --mod-st-vivid: var(--module-studio-vivid);
+  --mod-up-base: var(--module-upscale);
+  --mod-up-text: var(--module-upscale-text);
+  --mod-up-vivid: var(--module-upscale-vivid);
+  --mod-ve-base: var(--module-vectorize);
+  --mod-ve-text: var(--module-vectorize-text);
+  --mod-ve-vivid: var(--module-vectorize-vivid);
+  --mod-an-base: var(--module-animation);
+  --mod-an-text: var(--module-animation-text);
+  --mod-an-vivid: var(--module-animation-vivid);
+  --mod-li-base: var(--module-library);
+  --mod-li-text: var(--module-library-text);
+  --mod-li-vivid: var(--module-library-vivid);
+
+}
+
+/* Light theme overrides. */
+[data-theme="light"] {
+  --s-canvas: #f8fafc; --s-header: #ffffff; --s-sidebar: #ffffff; --s-dock: #ffffff; --s-dock-bar: #f1f5f9;
+  --s-card-hero: #ffffff; --s-card-gallery: #ffffff; --s-card-asset: #f8fafc; --s-field: #f8fafc; --s-control: #ffffff;
+  --s-nav-capsule: #f1f5f9; --s-nav-active: #2563eb; --s-segmented-well: #f1f5f9; --s-segmented-active: #ffffff;
+  --s-table-head: #f8fafc; --s-scrollbar-track: #f1f5f9; --s-scrollbar-thumb: #cbd5e1; --s-scrollbar-thumb-hover: #94a3b8;
+  --t-primary: #0f172a; --t-body: #334155; --t-secondary: #475569; --t-muted: #64748b; --t-heading: #0f172a;
+  --accent: #2563eb; --accent-hover: #1d4ed8; --accent-fill: #2563eb;
+  --border-default: #e2e8f0; --border-subtle: #e2e8f0; --border-strong: #cbd5e1;
+  --module-upscale: #0ea5e9; --status-success: #059669; --s-warn: #d97706; --s-error: #dc2626;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / .05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / .10), 0 2px 4px -2px rgb(0 0 0 / .10);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / .10), 0 4px 6px -4px rgb(0 0 0 / .10);
+}
+
+@theme {
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", Menlo, Monaco, "Courier New", monospace;
+
+  --color-s-canvas: var(--s-canvas);
+  --color-s-header: var(--s-header);
+  --color-s-sidebar: var(--s-sidebar);
+  --color-s-dock: var(--s-dock);
+  --color-s-dock-bar: var(--s-dock-bar);
+  --color-s-card-hero: var(--s-card-hero);
+  --color-s-card-gallery: var(--s-card-gallery);
+  --color-s-card-asset: var(--s-card-asset);
+  --color-s-field: var(--s-field);
+  --color-s-control: var(--s-control);
+  --color-s-nav-capsule: var(--s-nav-capsule);
+  --color-s-nav-active: var(--s-nav-active);
+  --color-s-segmented-well: var(--s-segmented-well);
+  --color-s-segmented-active: var(--s-segmented-active);
+  --color-s-table-head: var(--s-table-head);
+  --color-s-scrollbar-track: var(--s-scrollbar-track);
+  --color-s-scrollbar-thumb: var(--s-scrollbar-thumb);
+  --color-s-scrollbar-thumb-hover: var(--s-scrollbar-thumb-hover);
+  --color-t-primary: var(--t-primary);
+  --color-t-body: var(--t-body);
+  --color-t-secondary: var(--t-secondary);
+  --color-t-muted: var(--t-muted);
+  --color-t-heading: var(--t-heading);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fill: var(--accent-fill);
+  --color-gradient-start: var(--gradient-start);
+  --color-gradient-mid: var(--gradient-mid);
+  --color-gradient-end: var(--gradient-end);
+  --color-module-studio: var(--module-studio);
+  --color-module-upscale: var(--module-upscale);
+  --color-module-vectorize: var(--module-vectorize);
+  --color-module-remotion: var(--module-remotion);
+  --color-module-metadata: var(--module-metadata);
+  --color-module-gallery: var(--module-gallery);
+  --color-status-success: var(--status-success);
+  --color-status-success-text: var(--status-success-text);
+  --color-status-processing: var(--status-processing);
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-2xl: var(--shadow-2xl);
+  --shadow-selected: var(--shadow-selected);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+  --spacing-0-5: var(--space-0-5);
+  --spacing-1: var(--space-1);
+  --spacing-1-5: var(--space-1-5);
+  --spacing-2: var(--space-2);
+  --spacing-2-5: var(--space-2-5);
+  --spacing-3: var(--space-3);
+  --spacing-3-5: var(--space-3-5);
+  --spacing-4: var(--space-4);
+  --text-9: var(--text-9);
+  --text-10: var(--text-10);
+  --text-11: var(--text-11);
+  --text-xs: var(--text-xs);
+  --ease-token: cubic-bezier(.4, 0, .2, 1);
+
+  --color-vintage-paper: var(--s-base);
+  --color-vintage-ivory: var(--s-card);
+  --color-vintage-coffee: var(--s-text);
+  --color-vintage-navy: var(--s-text-2);
+  --color-vintage-border: var(--s-border);
+  --color-vintage-terracotta: var(--s-accent);
+  --color-vintage-mustard: var(--s-warn);
+  --color-vintage-olive: var(--s-success);
+  --color-vintage-sage: var(--module-vectorize-vivid);
+  --color-vintage-coral: var(--s-cyan);
+
+  --color-bg-page: var(--s-base);
+  --color-bg-card: var(--s-card);
+  --color-bg-element: var(--s-hover);
+  --color-border-color: var(--s-border);
+  --color-text-primary: var(--s-text);
+  --color-text-secondary: var(--s-text-2);
+  --color-accent-gold: var(--s-warn);
+  --color-accent-red: var(--s-accent);
+  --color-accent-green: var(--s-success);
+  --color-accent-blue: var(--s-cyan);
+
+  --color-mod-up-base: var(--module-upscale);
+  --color-mod-up-text: var(--module-upscale-text);
+  --color-mod-up-vivid: var(--module-upscale-vivid);
+  --color-mod-ve-base: var(--module-vectorize);
+  --color-mod-ve-text: var(--module-vectorize-text);
+  --color-mod-ve-vivid: var(--module-vectorize-vivid);
+  --color-mod-an-base: var(--module-animation);
+  --color-mod-an-text: var(--module-animation-text);
+  --color-mod-an-vivid: var(--module-animation-vivid);
+  --color-mod-li-base: var(--module-library);
+  --color-mod-li-text: var(--module-library-text);
+  --color-mod-li-vivid: var(--module-library-vivid);
+  --color-mod-st-base: var(--module-studio);
+  --color-mod-st-text: var(--module-studio-text);
+  --color-mod-st-vivid: var(--module-studio-vivid);
+
+  --color-ok-base: color-mix(in srgb, var(--s-success) 15%, transparent);
+  --color-ok-text: var(--s-success);
+  --color-ok-vivid: var(--s-success);
+  --color-wa-base: color-mix(in srgb, var(--s-warn) 15%, transparent);
+  --color-wa-text: var(--s-warn);
+  --color-wa-vivid: var(--s-warn);
+  --color-er-base: color-mix(in srgb, var(--s-error) 15%, transparent);
+  --color-er-text: var(--s-error);
+  --color-er-vivid: var(--s-error);
+  --color-info-base: color-mix(in srgb, var(--s-cyan) 15%, transparent);
+  --color-info-text: var(--s-cyan);
+  --color-info-vivid: var(--s-cyan);
+
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-fade-slide: fade-slide 0.28s ease-out both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fade-slide {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--s-canvas);
+  color: var(--t-body);
+  font-size: 12px;
+  line-height: 16px;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  overflow-x: hidden;
+}
+
+/* Aksi primer sesuai design reference: gradien indigo → cobalt → cyan */
+.cyber-gradient-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 50%, #06b6d4 100%);
+  transition: all 0.2s ease;
+}
+
+.cyber-gradient-btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.4);
+}
+
+.panel-header {
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Tailwind v4 resets button cursor to default — restore pointer for interactive elements */
+button:not(:disabled),
+[role="tab"]:not(:disabled),
+select:not(:disabled),
+label[onclick],
+div[onclick]:not([class*="cursor-"]),
+[data-clickable] {
+  cursor: pointer;
+}
+
+/* Consistent focus ring for keyboard users */
+button:focus-visible,
+[role="tab"]:focus-visible,
+select:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+input:focus-visible {
+  outline-offset: 1px;
+}
+
+/* Scrollbar sesuai design reference */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--s-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--s-scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--s-scrollbar-thumb-hover);
+}
